@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whiteout Survival Troop Ratio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div>
+        <h1>Whiteout Survival Troop Ratio</h1>
+        <p>打熊出征配置計算器</p>
+      </div>
+      <div class="player">
+        <label for="playerName">玩家名稱</label>
+        <input id="playerName" type="text" value="心碎小狗" />
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>一、基本資料</h2>
+      <div class="grid">
+        <label>
+          有英雄出征容量
+          <input id="withHeroesCap" type="number" value="147810" min="0" />
+        </label>
+        <label>
+          無英雄出征容量
+          <input id="withoutHeroesCap" type="number" value="107400" min="0" />
+        </label>
+        <label>
+          Cyrille 容量加成
+          <input id="cyrilleBonus" type="number" value="0" min="0" />
+        </label>
+        <label>
+          Pet Skill 容量加成
+          <input id="petBonus" type="number" value="0" min="0" />
+        </label>
+        <label>
+          Joiner 單隊上限
+          <input id="joinerLimit" type="number" value="97000" min="0" />
+        </label>
+        <label>
+          Joiner 數量
+          <input id="joinerCount" type="number" value="5" min="1" max="6" />
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>二、總兵力</h2>
+      <div class="grid">
+        <label>
+          盾兵 Infantry
+          <input id="infantry" type="number" value="278686" min="0" />
+        </label>
+        <label>
+          矛兵 Lancer
+          <input id="lancer" type="number" value="230332" min="0" />
+        </label>
+        <label>
+          射手 Marksman
+          <input id="marksman" type="number" value="314377" min="0" />
+        </label>
+      </div>
+      <div id="totalTroops" class="summary"></div>
+    </section>
+
+    <section class="card">
+      <h2>三、主隊配置</h2>
+      <div class="grid">
+        <label>
+          盾兵比例 %
+          <input id="mainInfRatio" type="number" value="50" min="0" max="100" />
+        </label>
+        <label>
+          矛兵比例 %
+          <input id="mainLanRatio" type="number" value="20" min="0" max="100" />
+        </label>
+        <label>
+          射手比例 %
+          <input id="mainMarRatio" type="number" value="30" min="0" max="100" />
+        </label>
+      </div>
+      <div id="mainRatioWarning" class="warning"></div>
+      <div id="mainResult"></div>
+    </section>
+
+    <section class="card">
+      <h2>四、Bear Trap Quantity Limit</h2>
+      <div class="grid">
+        <label>
+          Joiner 盾兵比例 %
+          <input id="joinerInfRatio" type="number" value="10" min="0" max="100" />
+        </label>
+        <label>
+          無英雄 Joiner 數量
+          <input id="heroLessJoinerCount" type="number" value="1" min="0" max="6" />
+        </label>
+      </div>
+      <p class="hint">
+        計算邏輯：主隊先使用兵力；剩餘射手平均分配給 Joiner；每隊先放指定盾兵，再用矛兵補滿單隊上限。
+      </p>
+      <div id="bearResult"></div>
+      <div id="bearRemaining"></div>
+    </section>
+
+    <section class="card">
+      <h2>五、CJ 1～CJ 6</h2>
+      <p class="hint">
+        保留原 Excel 的 CJ 邏輯：三種兵各自 ÷ 6，依序以「盾 → 矛 → 射」填入單隊容量。
+      </p>
+      <div id="cjResult"></div>
+      <div id="cjRemaining"></div>
+    </section>
+
+    <section class="card actions">
+      <button id="saveBtn">儲存到瀏覽器</button>
+      <button id="resetBtn" class="secondary">恢復預設值</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
