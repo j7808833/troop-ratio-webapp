@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07111f">
+  <title>Troop Ratio｜CJ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="cj">
+  <main class="app">
+    <header class="hero compact-hero">
+      <div>
+        <p class="eyebrow">Whiteout Survival</p>
+        <h1>CJ</h1>
+        <p class="subtitle">六隊平均分兵</p>
+      </div>
+      <div class="player-box">
+        <span>玩家</span>
+        <strong id="playerDisplay">心碎小狗</strong>
+      </div>
+    </header>
+
+    <section class="card">
+      <div id="cjSummary" class="summary-grid"></div>
+      <p class="hint">保留原 Excel 邏輯：三種兵各自 ÷ 6，再依「盾 → 矛 → 射」填入單隊容量。</p>
+      <div id="cjChart" class="chart-list"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-head"><h3>詳細配置</h3></div>
+      <div id="cjResult"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-head"><h3>剩餘可分配兵力</h3></div>
+      <div id="cjRemaining"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="index.html"><span>設定</span></a>
+    <a href="bear.html"><span>打熊</span></a>
+    <a href="cj.html" class="active"><span>CJ</span></a>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
