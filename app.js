@@ -166,15 +166,21 @@ function renderSummary(id, items) {
   el.innerHTML = items.map(x => `<div class="summary-tile"><span>${x.label}</span><strong>${x.value}</strong></div>`).join("");
 }
 
-function renderSettings() {
+function fillSettingsFromStorage() {
+  const data = savedData();
+
   Object.keys(DEFAULTS).forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.value = savedData()[id];
+    if (el && data[id] !== undefined) {
+      el.value = data[id];
+    }
   });
+}
 
+function renderSettings() {
   const total = getValue("infantry") + getValue("lancer") + getValue("marksman");
   document.getElementById("totalTroops").textContent = `總兵力 ${fmt(total)}`;
-  document.getElementById("playerDisplay").textContent = getValue("playerName");
+  document.getElementById("playerDisplay").textContent = getValue("playerName") || "未命名";
 
   const inf = getValue("infantry");
   const lan = getValue("lancer");
@@ -194,20 +200,36 @@ function renderSettings() {
       <span class="legend-item"><i class="dot mar"></i>射 ${fmt(mar)}</span>
     </div>`;
 
-  const ratio = getValue("mainInfRatio") + getValue("mainLanRatio") + getValue("mainMarRatio");
-  document.getElementById("mainRatioWarning").textContent = ratio === 100 ? "" : `主隊比例目前合計 ${ratio}%，應為 100%。`;
+  const ratio =
+    getValue("mainInfRatio") +
+    getValue("mainLanRatio") +
+    getValue("mainMarRatio");
+
+  document.getElementById("mainRatioWarning").textContent =
+    ratio === 100 ? "" : `主隊比例目前合計 ${ratio}%，應為 100%。`;
 
   const main = mainTeam();
-  document.getElementById("mainResult").innerHTML = teamTable(getValue("playerName"), [{ name:getValue("playerName"), ...main }], totalRallyCap());
+  document.getElementById("mainResult").innerHTML =
+    teamTable(
+      getValue("playerName") || "主隊",
+      [{ name: getValue("playerName") || "主隊", ...main }],
+      totalRallyCap()
+    );
+}
 
-  document.querySelectorAll("input").forEach(el => el.addEventListener("input", renderSettings));
+function setupSettingsEvents() {
+  document.querySelectorAll("input").forEach(el => {
+    el.addEventListener("input", renderSettings);
+  });
 
   document.getElementById("saveBtn").addEventListener("click", () => {
     const data = {};
+
     Object.keys(DEFAULTS).forEach(id => {
       const el = document.getElementById(id);
       data[id] = el.type === "number" ? Number(el.value) : el.value;
     });
+
     localStorage.setItem("troopRatioSettings", JSON.stringify(data));
     renderSettings();
     alert("設定已儲存。");
@@ -215,7 +237,8 @@ function renderSettings() {
 
   document.getElementById("resetBtn").addEventListener("click", () => {
     localStorage.removeItem("troopRatioSettings");
-    location.reload();
+    fillSettingsFromStorage();
+    renderSettings();
   });
 }
 
@@ -251,6 +274,10 @@ function renderCJ() {
   document.getElementById("cjRemaining").innerHTML = remainingTable(cj.remaining);
 }
 
-if (page === "settings") renderSettings();
+if (page === "settings") {
+  fillSettingsFromStorage();
+  setupSettingsEvents();
+  renderSettings();
+}
 if (page === "bear") renderBear();
 if (page === "cj") renderCJ();
