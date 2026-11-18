@@ -6,6 +6,9 @@ const DEFAULTS = {
   petBonus: 0,
   cyrilleRallyBonus: 0,
   petRallyBonus: 0,
+  ministerBonus: 0,
+  deploymentBoost: 0,
+  marchQueueCount: 6,
   joinerLimit: 97000,
   joinerCount: 5,
   infantry: 278686,
@@ -103,7 +106,13 @@ function fmt(value) {
 }
 
 function totalRallyCap() {
-  return getValue("withHeroesCap") + getValue("cyrilleBonus") + getValue("petBonus");
+  const fixedCap =
+    getValue("withHeroesCap") +
+    getValue("cyrilleBonus") +
+    getValue("petBonus") +
+    getValue("ministerBonus");
+
+  return Math.floor(fixedCap * (1 + getValue("deploymentBoost") / 100));
 }
 
 function mainTeam() {
@@ -116,10 +125,13 @@ function mainTeam() {
 
 function calculateBear() {
   const main = mainTeam();
-  const count = Math.max(1, Math.min(6, Math.floor(getValue("joinerCount"))));
+  const queueCount = Math.max(1, Math.min(6, Math.floor(getValue("marchQueueCount"))));
+  const count = Math.max(0, queueCount - 1);
   const limit = getValue("joinerLimit");
   const remainingMar = getValue("marksman") - main.marksman;
-  const marksmanPerJoiner = Math.floor(Math.max(0, remainingMar) / count);
+  const marksmanPerJoiner = count > 0
+    ? Math.floor(Math.max(0, remainingMar) / count)
+    : 0;
   const infantry = Math.floor(limit * getValue("joinerInfRatio") / 100);
   const marksman = Math.min(marksmanPerJoiner, Math.max(0, limit - infantry));
   const lancer = Math.max(0, limit - infantry - marksman);
@@ -144,7 +156,7 @@ function calculateBear() {
 }
 
 function calculateCJ() {
-  const count = 6;
+  const count = Math.max(1, Math.min(6, Math.floor(getValue("marchQueueCount"))));
   const cap = totalRallyCap();
   const perInf = Math.floor(getValue("infantry") / count);
   const perLan = Math.floor(getValue("lancer") / count);
@@ -367,7 +379,7 @@ function renderCJ() {
   const total = getValue("infantry") + getValue("lancer") + getValue("marksman");
 
   renderSummary("cjSummary", [
-    { label:T.cjTeams, value:language === "en" ? "6 teams" : "6 隊" },
+    { label:T.cjTeams, value:language === "en" ? `${cj.teams.length} teams` : `${cj.teams.length} 隊` },
     { label:T.teamCapacity, value:fmt(totalRallyCap()) },
     { label:T.totalTroops, value:fmt(total) }
   ]);
