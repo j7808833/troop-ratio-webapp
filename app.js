@@ -50,7 +50,11 @@ const T = {
     exact: "Exact",
     under: "Under",
     over: "Over",
-    mainTeam: "Main Team"
+    mainTeam: "Main Team",
+    marchQueue: "March Queue",
+    heroLess: "Hero-less Teams",
+    heroJoiner: "Hero Joiner",
+    heroLessJoiner: "Hero-less Joiner"
   },
   zh: {
     player: "玩家",
@@ -77,7 +81,11 @@ const T = {
     exact: "剛好",
     under: "不足",
     over: "超出",
-    mainTeam: "主隊"
+    mainTeam: "主隊",
+    marchQueue: "出征隊數",
+    heroLess: "無英雄隊數",
+    heroJoiner: "有英雄 Joiner",
+    heroLessJoiner: "無英雄 Joiner"
   }
 }[language];
 
@@ -105,18 +113,25 @@ function fmt(value) {
   return Math.round(value).toLocaleString("en-US");
 }
 
-function totalRallyCap() {
+function marchCapacity(withHeroes = true) {
+  const base = withHeroes
+    ? getValue("withHeroesCap") + getValue("cyrilleBonus")
+    : getValue("withoutHeroesCap");
+
   const fixedCap =
-    getValue("withHeroesCap") +
-    getValue("cyrilleBonus") +
+    base +
     getValue("petBonus") +
     getValue("ministerBonus");
 
   return Math.floor(fixedCap * (1 + getValue("deploymentBoost") / 100));
 }
 
+function totalRallyCap() {
+  return marchCapacity(true);
+}
+
 function mainTeam() {
-  const cap = totalRallyCap();
+  const cap = marchCapacity(true);
   const inf = Math.floor(cap * getValue("mainInfRatio") / 100);
   const lan = Math.floor(cap * getValue("mainLanRatio") / 100);
   const mar = Math.max(0, cap - inf - lan);
@@ -124,60 +139,95 @@ function mainTeam() {
 }
 
 function calculateBear() {
-  const main = mainTeam();
   const queueCount = Math.max(0, Math.min(6, Math.floor(getValue("marchQueueCount"))));
+
+  if (queueCount === 0) {
+    return {
+      main: null,
+      teams: [],
+      remaining: {
+        infantry: getValue("infantry"),
+        lancer: getValue("lancer"),
+        marksman: getValue("marksman")
+      }
+    };
+  }
+
+  const main = mainTeam();
   const count = Math.max(0, queueCount - 1);
-  const limit = getValue("joinerLimit");
+  const heroLessCount = Math.min(count, Math.max(0, Math.floor(getValue("heroLessJoinerCount"))));
+  const heroCount = count - heroLessCount;
   const remainingMar = getValue("marksman") - main.marksman;
   const marksmanPerJoiner = count > 0
     ? Math.floor(Math.max(0, remainingMar) / count)
     : 0;
-  const infantry = Math.floor(limit * getValue("joinerInfRatio") / 100);
-  const marksman = Math.min(marksmanPerJoiner, Math.max(0, limit - infantry));
-  const lancer = Math.max(0, limit - infantry - marksman);
 
-  const teams = Array.from({ length: count }, (_, i) => ({
-    name: `Joiner ${i + 1}`,
-    infantry,
-    lancer,
-    marksman,
-    total: infantry + lancer + marksman
-  }));
+  const teams = Array.from({ length: count }, (_, i) => {
+    const heroLess = i >= heroCount;
+    const personalCap = marchCapacity(!heroLess);
+    const limit = Math.min(getValue("joinerLimit"), personalCap);
+    const infantry = Math.floor(limit * getValue("joinerInfRatio") / 100);
+    const marksman = Math.min(marksmanPerJoiner, Math.max(0, limit - infantry));
+    const lancer = Math.max(0, limit - infantry - marksman);
+
+    return {
+      name: heroLess
+        ? `${T.heroLessJoiner} ${i - heroCount + 1}`
+        : `${T.heroJoiner} ${i + 1}`,
+      infantry,
+      lancer,
+      marksman,
+      total: infantry + lancer + marksman,
+      heroLess
+    };
+  });
 
   return {
     main,
     teams,
     remaining: {
-      infantry: getValue("infantry") - main.infantry - infantry * count,
-      lancer: getValue("lancer") - main.lancer - lancer * count,
-      marksman: getValue("marksman") - main.marksman - marksman * count
+      infantry: getValue("infantry") - main.infantry - teams.reduce((sum, t) => sum + t.infantry, 0),
+      lancer: getValue("lancer") - main.lancer - teams.reduce((sum, t) => sum + t.lancer, 0),
+      marksman: getValue("marksman") - main.marksman - teams.reduce((sum, t) => sum + t.marksman, 0)
     }
   };
 }
 
 function calculateCJ() {
   const count = Math.max(0, Math.min(6, Math.floor(getValue("marchQueueCount"))));
-  const cap = totalRallyCap();
+  const heroLessCount = Math.min(count, Math.max(0, Math.floor(getValue("heroLessJoinerCount"))));
+  const heroCount = count - heroLessCount;
+
   const perInf = count > 0 ? Math.floor(getValue("infantry") / count) : 0;
   const perLan = count > 0 ? Math.floor(getValue("lancer") / count) : 0;
   const perMar = count > 0 ? Math.floor(getValue("marksman") / count) : 0;
 
   const teams = Array.from({ length: count }, (_, i) => {
+    const heroLess = i >= heroCount;
+    const cap = marchCapacity(!heroLess);
     let remaining = cap;
     const infantry = Math.min(remaining, perInf);
     remaining -= infantry;
     const lancer = Math.min(remaining, perLan);
     remaining -= lancer;
     const marksman = Math.min(remaining, perMar);
-    return { name: `${T.team} ${i + 1}`, infantry, lancer, marksman, total: infantry + lancer + marksman };
+
+    return {
+      name: `${T.team} ${i + 1}`,
+      infantry,
+      lancer,
+      marksman,
+      total: infantry + lancer + marksman,
+      heroLess
+    };
   });
 
   return {
     teams,
     remaining: {
-      infantry: getValue("infantry") - teams.reduce((s, t) => s + t.infantry, 0),
-      lancer: getValue("lancer") - teams.reduce((s, t) => s + t.lancer, 0),
-      marksman: getValue("marksman") - teams.reduce((s, t) => s + t.marksman, 0)
+      infantry: getValue("infantry") - teams.reduce((sum, t) => sum + t.infantry, 0),
+      lancer: getValue("lancer") - teams.reduce((sum, t) => sum + t.lancer, 0),
+      marksman: getValue("marksman") - teams.reduce((sum, t) => sum + t.marksman, 0)
     }
   };
 }
@@ -360,16 +410,21 @@ function applyActivityLanguage() {
 function renderBear() {
   document.getElementById("playerDisplay").textContent = getValue("playerName");
   const bear = calculateBear();
-  const rows = [{ name:getValue("playerName"), ...bear.main }, ...bear.teams];
+  const rows = bear.main
+    ? [{ name:getValue("playerName"), ...bear.main }, ...bear.teams]
+    : [];
 
   renderSummary("bearSummary", [
-    { label:T.mainCapacity, value:fmt(bear.main.total) },
-    { label:T.joiner, value:language === "en" ? `${bear.teams.length} teams` : `${bear.teams.length} 隊` },
-    { label:T.teamLimit, value:fmt(getValue("joinerLimit")) }
+    { label:T.marchQueue, value:String(getValue("marchQueueCount")) },
+    { label:T.heroLess, value:String(Math.min(bear.teams.length, getValue("heroLessJoinerCount"))) },
+    { label:T.mainCapacity, value:bear.main ? fmt(bear.main.total) : "0" },
+    { label:T.joiner, value:language === "en" ? `${bear.teams.length} teams` : `${bear.teams.length} 隊` }
   ]);
 
   document.getElementById("bearChart").innerHTML = rows.map(r => stackBar(r, r.name)).join("");
-  document.getElementById("bearResult").innerHTML = teamTable(T.bear, rows, getValue("joinerLimit"));
+  document.getElementById("bearResult").innerHTML = rows.length
+    ? teamTable(T.bear, rows, getValue("joinerLimit"))
+    : "";
   document.getElementById("bearRemaining").innerHTML = remainingTable(bear.remaining);
 }
 
@@ -379,8 +434,9 @@ function renderCJ() {
   const total = getValue("infantry") + getValue("lancer") + getValue("marksman");
 
   renderSummary("cjSummary", [
+    { label:T.marchQueue, value:String(getValue("marchQueueCount")) },
+    { label:T.heroLess, value:String(Math.min(cj.teams.length, getValue("heroLessJoinerCount"))) },
     { label:T.cjTeams, value:language === "en" ? `${cj.teams.length} teams` : `${cj.teams.length} 隊` },
-    { label:T.teamCapacity, value:fmt(totalRallyCap()) },
     { label:T.totalTroops, value:fmt(total) }
   ]);
 
