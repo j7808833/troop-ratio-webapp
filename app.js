@@ -38,11 +38,8 @@ function totalRallyCap() {
 
 function mainTeam() {
   const cap = totalRallyCap();
-
   const inf = Math.floor(cap * num("mainInfRatio") / 100);
   const lan = Math.floor(cap * num("mainLanRatio") / 100);
-
-  // 最後一種兵直接用剩餘量，避免百分比乘法的四捨五入誤差。
   const mar = Math.max(0, cap - inf - lan);
 
   return {
@@ -55,29 +52,19 @@ function mainTeam() {
 
 function calculateBear() {
   const main = mainTeam();
-
   const totalInf = num("infantry");
   const totalLan = num("lancer");
   const totalMar = num("marksman");
-
   const count = Math.max(1, Math.min(6, Math.floor(num("joinerCount"))));
   const limit = num("joinerLimit");
 
-  const remainingInfAfterMain = totalInf - main.infantry;
-  const remainingLanAfterMain = totalLan - main.lancer;
   const remainingMarAfterMain = totalMar - main.marksman;
-
-  // 原 Excel 的核心思想：剩餘射手平均分配給所有 Joiner。
   const marksmanPerJoiner = Math.floor(Math.max(0, remainingMarAfterMain) / count);
-
   const joinerInfantry = Math.floor(limit * num("joinerInfRatio") / 100);
-
-  // 每隊先放盾兵，再放平均射手，最後用矛兵補滿。
   const actualMarksman = Math.min(
     marksmanPerJoiner,
     Math.max(0, limit - joinerInfantry)
   );
-
   const joinerLancer = Math.max(
     0,
     limit - joinerInfantry - actualMarksman
@@ -113,11 +100,9 @@ function calculateBear() {
 function calculateCJ() {
   const teamCount = 6;
   const cap = totalRallyCap();
-
   const perInf = Math.floor(num("infantry") / teamCount);
   const perLan = Math.floor(num("lancer") / teamCount);
   const perMar = Math.floor(num("marksman") / teamCount);
-
   const teams = [];
 
   for (let i = 0; i < teamCount; i++) {
@@ -130,7 +115,6 @@ function calculateCJ() {
     remaining -= lancer;
 
     const marksman = Math.min(remaining, perMar);
-    remaining -= marksman;
 
     teams.push({
       name: `CJ ${i + 1}`,
@@ -195,8 +179,8 @@ function remainingTable(data) {
       <table>
         <thead>
           <tr>
-            <th>Remaining Allocatable</th>
-            <th>數量</th>
+            <th>兵種</th>
+            <th>剩餘</th>
           </tr>
         </thead>
         <tbody>
@@ -209,10 +193,70 @@ function remainingTable(data) {
   `;
 }
 
+function stackBar(team, label) {
+  const total = Math.max(1, team.total);
+  const inf = team.infantry / total * 100;
+  const lan = team.lancer / total * 100;
+  const mar = team.marksman / total * 100;
+
+  return `
+    <div class="team-chart">
+      <div class="name">
+        <span>${label}</span>
+        <small>${fmt(team.total)}</small>
+      </div>
+      <div class="stackbar" aria-label="${label} 兵種比例">
+        <span class="seg inf" style="width:${inf}%"></span>
+        <span class="seg lan" style="width:${lan}%"></span>
+        <span class="seg mar" style="width:${mar}%"></span>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><i class="dot inf"></i>盾 ${Math.round(inf)}%</span>
+        <span class="legend-item"><i class="dot lan"></i>矛 ${Math.round(lan)}%</span>
+        <span class="legend-item"><i class="dot mar"></i>射 ${Math.round(mar)}%</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderTotalChart() {
+  const inf = num("infantry");
+  const lan = num("lancer");
+  const mar = num("marksman");
+  const total = inf + lan + mar || 1;
+
+  document.getElementById("totalChart").innerHTML = `
+    <div class="chart-title">
+      <span>總兵力構成</span>
+      <span>${fmt(total)}</span>
+    </div>
+    <div class="stackbar">
+      <span class="seg inf" style="width:${inf / total * 100}%"></span>
+      <span class="seg lan" style="width:${lan / total * 100}%"></span>
+      <span class="seg mar" style="width:${mar / total * 100}%"></span>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><i class="dot inf"></i>盾 ${fmt(inf)}</span>
+      <span class="legend-item"><i class="dot lan"></i>矛 ${fmt(lan)}</span>
+      <span class="legend-item"><i class="dot mar"></i>射 ${fmt(mar)}</span>
+    </div>
+  `;
+}
+
+function renderSummary(targetId, items) {
+  document.getElementById(targetId).innerHTML = items.map(item => `
+    <div class="summary-tile">
+      <span>${item.label}</span>
+      <strong>${item.value}</strong>
+    </div>
+  `).join("");
+}
+
 function render() {
   const total = num("infantry") + num("lancer") + num("marksman");
-  document.getElementById("totalTroops").textContent =
-    `總兵力：${fmt(total)}`;
+  document.getElementById("totalTroops").textContent = `總兵力 ${fmt(total)}`;
+  document.getElementById("playerDisplay").textContent =
+    document.getElementById("playerName").value || "未命名";
 
   const ratioTotal =
     num("mainInfRatio") +
@@ -221,6 +265,8 @@ function render() {
 
   document.getElementById("mainRatioWarning").textContent =
     ratioTotal === 100 ? "" : `主隊比例目前合計 ${ratioTotal}%，應為 100%。`;
+
+  renderTotalChart();
 
   const main = mainTeam();
   document.getElementById("mainResult").innerHTML =
@@ -234,19 +280,40 @@ function render() {
     );
 
   const bear = calculateBear();
+  const bearRows = [
+    {
+      name: document.getElementById("playerName").value || "主隊",
+      ...bear.main
+    },
+    ...bear.teams
+  ];
+
+  renderSummary("bearSummary", [
+    { label: "主隊容量", value: fmt(bear.main.total) },
+    { label: "Joiner", value: `${bear.teams.length} 隊` },
+    { label: "單隊上限", value: fmt(num("joinerLimit")) }
+  ]);
+
+  document.getElementById("bearChart").innerHTML =
+    bearRows.map(row => stackBar(row, row.name)).join("");
+
   document.getElementById("bearResult").innerHTML =
-    teamTable("Bear Trap", [
-      {
-        name: document.getElementById("playerName").value || "主隊",
-        ...bear.main
-      },
-      ...bear.teams
-    ], num("joinerLimit"));
+    teamTable("Bear Trap", bearRows, num("joinerLimit"));
 
   document.getElementById("bearRemaining").innerHTML =
     remainingTable(bear.remaining);
 
   const cj = calculateCJ();
+
+  renderSummary("cjSummary", [
+    { label: "CJ 隊伍", value: `${cj.teams.length} 隊` },
+    { label: "單隊容量", value: fmt(totalRallyCap()) },
+    { label: "總兵力", value: fmt(total) }
+  ]);
+
+  document.getElementById("cjChart").innerHTML =
+    cj.teams.map(row => stackBar(row, row.name)).join("");
+
   document.getElementById("cjResult").innerHTML =
     teamTable("CJ", cj.teams, totalRallyCap());
 
@@ -285,6 +352,22 @@ function reset() {
   render();
 }
 
+function setupTabs() {
+  const buttons = document.querySelectorAll(".tab-btn");
+  const pages = document.querySelectorAll(".tab-page");
+
+  buttons.forEach(button => {
+    button.addEventListener("click", () => {
+      buttons.forEach(btn => btn.classList.remove("active"));
+      pages.forEach(page => page.classList.remove("active"));
+
+      button.classList.add("active");
+      document.getElementById(`tab-${button.dataset.tab}`).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
 ids.forEach(id => {
   document.getElementById(id).addEventListener("input", render);
 });
@@ -296,5 +379,6 @@ document.getElementById("saveBtn").addEventListener("click", () => {
 
 document.getElementById("resetBtn").addEventListener("click", reset);
 
+setupTabs();
 load();
 render();
