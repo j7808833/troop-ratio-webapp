@@ -89,7 +89,7 @@ function calculateCJ() {
     const lancer = Math.min(remaining, perLan);
     remaining -= lancer;
     const marksman = Math.min(remaining, perMar);
-    return { name: `CJ ${i + 1}`, infantry, lancer, marksman, total: infantry + lancer + marksman };
+    return { name: `隊伍 ${i + 1}`, infantry, lancer, marksman, total: infantry + lancer + marksman };
   });
 
   return {
@@ -231,7 +231,7 @@ function renderBear() {
   ]);
 
   document.getElementById("bearChart").innerHTML = rows.map(r => stackBar(r, r.name)).join("");
-  document.getElementById("bearResult").innerHTML = teamTable("Bear Trap", rows, getValue("joinerLimit"));
+  document.getElementById("bearResult").innerHTML = teamTable("獵熊行動", rows, getValue("joinerLimit"));
   document.getElementById("bearRemaining").innerHTML = remainingTable(bear.remaining);
 }
 
@@ -241,13 +241,13 @@ function renderCJ() {
   const total = getValue("infantry") + getValue("lancer") + getValue("marksman");
 
   renderSummary("cjSummary", [
-    { label:"CJ 隊伍", value:"6 隊" },
+    { label:"瘋狂的喬伊隊伍", value:"6 隊" },
     { label:"單隊容量", value:fmt(totalRallyCap()) },
     { label:"總兵力", value:fmt(total) }
   ]);
 
   document.getElementById("cjChart").innerHTML = cj.teams.map(r => stackBar(r, r.name)).join("");
-  document.getElementById("cjResult").innerHTML = teamTable("CJ", cj.teams, totalRallyCap());
+  document.getElementById("cjResult").innerHTML = teamTable("瘋狂的喬伊", cj.teams, totalRallyCap());
   document.getElementById("cjRemaining").innerHTML = remainingTable(cj.remaining);
 }
 
