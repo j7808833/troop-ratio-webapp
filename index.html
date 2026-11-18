@@ -434,10 +434,10 @@
       document.getElementById("marchQueueValue").textContent = value("marchQueueCount");
       document.getElementById("heroLessJoinerValue").textContent = value("heroLessJoinerCount");
       document.getElementById("totalTroops").textContent = I18N[language].totalTroops + " " + fmt(total);
-      const fixedMarchBonus = value("cyrilleBonus") + value("petBonus") + value("ministerBonus");
-      const preBoostCap = value("withHeroesCap") + fixedMarchBonus;
+      const preMinisterBonus = value("cyrilleBonus") + value("petBonus");
+      const preBoostCap = value("withHeroesCap") + preMinisterBonus;
       const percentBonus = Math.floor(preBoostCap * value("deploymentBoost") / 100);
-      const marchBonus = fixedMarchBonus + percentBonus;
+      const marchBonus = preMinisterBonus + percentBonus + value("ministerBonus");
       const rallyBonus = value("cyrilleRallyBonus") + value("petRallyBonus");
       document.getElementById("marchBonusValue").textContent = "+" + fmt(marchBonus);
       document.getElementById("rallyBonusValue").textContent = "+" + fmt(rallyBonus);
@@ -464,8 +464,8 @@
       document.getElementById("mainRatioWarning").textContent =
         ratioTotal === 100 ? "" : I18N[language].ratioWarning.replace("{n}", ratioTotal);
 
-      const fixedCap = value("withHeroesCap") + value("cyrilleBonus") + value("petBonus") + value("ministerBonus");
-      const cap = Math.floor(fixedCap * (1 + value("deploymentBoost") / 100));
+      const preMinisterCap = value("withHeroesCap") + value("cyrilleBonus") + value("petBonus");
+      const cap = Math.floor(preMinisterCap * (1 + value("deploymentBoost") / 100)) + value("ministerBonus");
       const mainInf = Math.floor(cap * rInf / 100);
       const mainLan = Math.floor(cap * rLan / 100);
       const mainMar = Math.max(0, cap - mainInf - mainLan);
