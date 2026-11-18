@@ -244,7 +244,7 @@
         capacityBuffHint: "March-capacity buffs affect your own dispatched squad. Rally-capacity buffs affect the rally total and are not added to a single squad.",
         labelJoinerLimit: "Joiner Team Limit",
         labelJoinerCount: "Joiner Count",
-        labelHeroLess: "Hero-less Joiner Count",
+        labelHeroLess: "Hero-less Marches",
         totalTitle: "Total Troops",
         labelInfantry: "Infantry",
         labelLancer: "Lancer",
@@ -290,7 +290,7 @@
         capacityBuffHint: "出征容量加成會影響自己的單隊容量；集結容量加成只影響整體集結上限，不會加到單隊容量。",
         labelJoinerLimit: "Joiner 單隊上限",
         labelJoinerCount: "Joiner 數量",
-        labelHeroLess: "無英雄 Joiner 數量",
+        labelHeroLess: "無英雄隊數",
         totalTitle: "總兵力",
         labelInfantry: "盾兵 Infantry",
         labelLancer: "矛兵 Lancer",
@@ -339,6 +339,7 @@
       document.querySelectorAll("option[data-en][data-zh]").forEach(option => {
         option.textContent = option.dataset[lang];
       });
+      document.title = lang === "en" ? "Troop Ratio | Settings" : "Troop Ratio｜設定";
       document.documentElement.lang = lang === "en" ? "en" : "zh-Hant";
       render();
     }
