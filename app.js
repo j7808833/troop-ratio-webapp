@@ -19,10 +19,75 @@ const DEFAULTS = {
 };
 
 const page = document.body.dataset.page || "settings";
+const language = localStorage.getItem("troopRatioLanguage") || "en";
+
+const T = {
+  en: {
+    player: "Player",
+    settings: "Settings",
+    bear: "Bear Hunt",
+    cj: "Crazy Joe",
+    detail: "Detailed Configuration",
+    remainingTitle: "Remaining Troops",
+    bearHint: "The main team uses troops first. Remaining Marksmen are divided among Joiners; each Joiner receives the specified Infantry first, then Lancers fill the remaining capacity.",
+    cjHint: "Original Excel logic: divide each troop type by 6, then fill each team in the order Infantry → Lancer → Marksman.",
+    mainCapacity: "Main Team Capacity",
+    joiner: "Joiner",
+    teamLimit: "Team Limit",
+    cjTeams: "Crazy Joe Teams",
+    teamCapacity: "Team Capacity",
+    totalTroops: "Total Troops",
+    team: "Team",
+    infantry: "Infantry",
+    lancer: "Lancer",
+    marksman: "Marksman",
+    total: "Total",
+    status: "Status",
+    remaining: "Remaining",
+    exact: "Exact",
+    under: "Under",
+    over: "Over",
+    mainTeam: "Main Team"
+  },
+  zh: {
+    player: "玩家",
+    settings: "設定",
+    bear: "獵熊行動",
+    cj: "瘋狂的喬伊",
+    detail: "詳細配置",
+    remainingTitle: "剩餘可分配兵力",
+    bearHint: "主隊先使用兵力；剩餘射手平均分配給 Joiner；每隊先放指定盾兵，再以矛兵補滿。",
+    cjHint: "保留原 Excel 邏輯：三種兵各自 ÷ 6，再依「盾 → 矛 → 射」填入單隊容量。",
+    mainCapacity: "主隊容量",
+    joiner: "Joiner",
+    teamLimit: "單隊上限",
+    cjTeams: "瘋狂的喬伊隊伍",
+    teamCapacity: "單隊容量",
+    totalTroops: "總兵力",
+    team: "隊伍",
+    infantry: "盾兵",
+    lancer: "矛兵",
+    marksman: "射手",
+    total: "總數",
+    status: "狀態",
+    remaining: "剩餘",
+    exact: "剛好",
+    under: "不足",
+    over: "超出",
+    mainTeam: "主隊"
+  }
+}[language];
+
+document.documentElement.lang = language === "en" ? "en" : "zh-Hant";
 
 function savedData() {
   const raw = localStorage.getItem("troopRatioSettings");
-  return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
+  const data = raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
+  if (data.playerName === "心碎") {
+    data.playerName = "心碎小狗";
+    localStorage.setItem("troopRatioSettings", JSON.stringify(data));
+  }
+  return data;
 }
 
 function getValue(id) {
@@ -92,7 +157,7 @@ function calculateCJ() {
     const lancer = Math.min(remaining, perLan);
     remaining -= lancer;
     const marksman = Math.min(remaining, perMar);
-    return { name: `隊伍 ${i + 1}`, infantry, lancer, marksman, total: infantry + lancer + marksman };
+    return { name: `${T.team} ${i + 1}`, infantry, lancer, marksman, total: infantry + lancer + marksman };
   });
 
   return {
@@ -106,26 +171,26 @@ function calculateCJ() {
 }
 
 function status(total, target) {
-  if (total === target) return ["Exact", "status-exact"];
-  if (total < target) return ["Under", "status-under"];
-  return ["Over", "status-over"];
+  if (total === target) return [T.exact, "status-exact"];
+  if (total < target) return [T.under, "status-under"];
+  return [T.over, "status-over"];
 }
 
 function teamTable(title, rows, target) {
   return `
     <div class="table-wrap">
       <table>
-        <thead><tr><th>${title}</th><th>盾兵</th><th>矛兵</th><th>射手</th><th>總數</th><th>狀態</th></tr></thead>
+        <thead><tr><th>${title}</th><th>${T.infantry}</th><th>${T.lancer}</th><th>${T.marksman}</th><th>${T.total}</th><th>${T.status}</th></tr></thead>
         <tbody>
           ${rows.map(row => {
             const [label, css] = status(row.total, target);
             return `<tr>
               <td>${row.name}</td>
-              <td data-label="盾兵">${fmt(row.infantry)}</td>
-              <td data-label="矛兵">${fmt(row.lancer)}</td>
-              <td data-label="射手">${fmt(row.marksman)}</td>
-              <td data-label="總數">${fmt(row.total)}</td>
-              <td data-label="狀態" class="${css}">${label}</td>
+              <td data-label="${T.infantry}">${fmt(row.infantry)}</td>
+              <td data-label="${T.lancer}">${fmt(row.lancer)}</td>
+              <td data-label="${T.marksman}">${fmt(row.marksman)}</td>
+              <td data-label="${T.total}">${fmt(row.total)}</td>
+              <td data-label="${T.status}" class="${css}">${label}</td>
             </tr>`;
           }).join("")}
         </tbody>
@@ -134,11 +199,11 @@ function teamTable(title, rows, target) {
 }
 
 function remainingTable(data) {
-  const row = (name, value) => `<tr><td>${name}</td><td data-label="剩餘" class="${value < 0 ? "negative" : ""}">${fmt(value)}</td></tr>`;
-  return `<div class="table-wrap"><table><thead><tr><th>兵種</th><th>剩餘</th></tr></thead><tbody>
-    ${row("Infantry 盾兵", data.infantry)}
-    ${row("Lancer 矛兵", data.lancer)}
-    ${row("Marksman 射手", data.marksman)}
+  const row = (name, value) => `<tr><td>${name}</td><td data-label="${T.remaining}" class="${value < 0 ? "negative" : ""}">${fmt(value)}</td></tr>`;
+  return `<div class="table-wrap"><table><thead><tr><th>${language === "en" ? "Troop Type" : "兵種"}</th><th>${T.remaining}</th></tr></thead><tbody>
+    ${row(T.infantry, data.infantry)}
+    ${row(T.lancer, data.lancer)}
+    ${row(T.marksman, data.marksman)}
   </tbody></table></div>`;
 }
 
@@ -156,9 +221,9 @@ function stackBar(team, label) {
       <span class="seg mar" style="width:${mar}%"></span>
     </div>
     <div class="legend">
-      <span class="legend-item"><i class="dot inf"></i>盾 ${Math.round(inf)}%</span>
-      <span class="legend-item"><i class="dot lan"></i>矛 ${Math.round(lan)}%</span>
-      <span class="legend-item"><i class="dot mar"></i>射 ${Math.round(mar)}%</span>
+      <span class="legend-item"><i class="dot inf"></i>${language === "en" ? "Inf" : "盾"} ${Math.round(inf)}%</span>
+      <span class="legend-item"><i class="dot lan"></i>${language === "en" ? "Lan" : "矛"} ${Math.round(lan)}%</span>
+      <span class="legend-item"><i class="dot mar"></i>${language === "en" ? "Mar" : "射"} ${Math.round(mar)}%</span>
     </div>
   </div>`;
 }
@@ -254,19 +319,45 @@ function setupSettingsEvents() {
   });
 }
 
+function applyActivityLanguage() {
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  set("playerLabel", T.player);
+  set("navSettings", T.settings);
+  set("navBear", T.bear);
+  set("navCj", T.cj);
+  set("detailTitle", T.detail);
+  set("remainingTitle", T.remainingTitle);
+
+  if (page === "bear") {
+    document.title = language === "en" ? "Troop Ratio | Bear Hunt" : "Troop Ratio｜獵熊行動";
+    set("bannerActivityTitle", language === "en" ? "Bear Hunt" : "獵熊行動（Bear Hunt）");
+    set("bearHint", T.bearHint);
+  }
+
+  if (page === "cj") {
+    document.title = language === "en" ? "Troop Ratio | Crazy Joe" : "Troop Ratio｜瘋狂的喬伊";
+    set("bannerActivityTitle", language === "en" ? "Crazy Joe" : "瘋狂的喬伊（Crazy Joe）");
+    set("cjHint", T.cjHint);
+  }
+}
+
 function renderBear() {
   document.getElementById("playerDisplay").textContent = getValue("playerName");
   const bear = calculateBear();
   const rows = [{ name:getValue("playerName"), ...bear.main }, ...bear.teams];
 
   renderSummary("bearSummary", [
-    { label:"主隊容量", value:fmt(bear.main.total) },
-    { label:"Joiner", value:`${bear.teams.length} 隊` },
-    { label:"單隊上限", value:fmt(getValue("joinerLimit")) }
+    { label:T.mainCapacity, value:fmt(bear.main.total) },
+    { label:T.joiner, value:language === "en" ? `${bear.teams.length} teams` : `${bear.teams.length} 隊` },
+    { label:T.teamLimit, value:fmt(getValue("joinerLimit")) }
   ]);
 
   document.getElementById("bearChart").innerHTML = rows.map(r => stackBar(r, r.name)).join("");
-  document.getElementById("bearResult").innerHTML = teamTable("獵熊行動", rows, getValue("joinerLimit"));
+  document.getElementById("bearResult").innerHTML = teamTable(T.bear, rows, getValue("joinerLimit"));
   document.getElementById("bearRemaining").innerHTML = remainingTable(bear.remaining);
 }
 
@@ -276,13 +367,13 @@ function renderCJ() {
   const total = getValue("infantry") + getValue("lancer") + getValue("marksman");
 
   renderSummary("cjSummary", [
-    { label:"瘋狂的喬伊隊伍", value:"6 隊" },
-    { label:"單隊容量", value:fmt(totalRallyCap()) },
-    { label:"總兵力", value:fmt(total) }
+    { label:T.cjTeams, value:language === "en" ? "6 teams" : "6 隊" },
+    { label:T.teamCapacity, value:fmt(totalRallyCap()) },
+    { label:T.totalTroops, value:fmt(total) }
   ]);
 
   document.getElementById("cjChart").innerHTML = cj.teams.map(r => stackBar(r, r.name)).join("");
-  document.getElementById("cjResult").innerHTML = teamTable("瘋狂的喬伊", cj.teams, totalRallyCap());
+  document.getElementById("cjResult").innerHTML = teamTable(T.cj, cj.teams, totalRallyCap());
   document.getElementById("cjRemaining").innerHTML = remainingTable(cj.remaining);
 }
 
@@ -291,5 +382,11 @@ if (page === "settings") {
   setupSettingsEvents();
   renderSettings();
 }
-if (page === "bear") renderBear();
-if (page === "cj") renderCJ();
+if (page === "bear") {
+  applyActivityLanguage();
+  renderBear();
+}
+if (page === "cj") {
+  applyActivityLanguage();
+  renderCJ();
+}
