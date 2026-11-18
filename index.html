@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#07111f">
   <title>Troop Ratio｜設定</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261118c">
 </head>
 <body data-page="settings">
   <main class="app">
@@ -94,6 +94,176 @@
     <a href="cj.html"><span>瘋狂的喬伊</span></a>
   </nav>
 
-  <script src="app.js"></script>
+  
+  <script>
+  (() => {
+    const DEFAULTS = {
+      playerName: "心碎小狗",
+      withHeroesCap: 147810,
+      withoutHeroesCap: 107400,
+      cyrilleBonus: 0,
+      petBonus: 0,
+      joinerLimit: 97000,
+      joinerCount: 5,
+      infantry: 278686,
+      lancer: 230332,
+      marksman: 314377,
+      mainInfRatio: 50,
+      mainLanRatio: 20,
+      mainMarRatio: 30,
+      joinerInfRatio: 10,
+      heroLessJoinerCount: 1
+    };
+
+    const ids = Object.keys(DEFAULTS);
+
+    function readSaved() {
+      try {
+        const raw = localStorage.getItem("troopRatioSettings");
+        return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
+      } catch {
+        return { ...DEFAULTS };
+      }
+    }
+
+    function fillOnce() {
+      const data = readSaved();
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && data[id] !== undefined) el.value = data[id];
+      });
+    }
+
+    function value(id) {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      if (el.type === "number") return el.value === "" ? 0 : Number(el.value);
+      return el.value;
+    }
+
+    function fmt(n) {
+      return Math.round(Number(n) || 0).toLocaleString("en-US");
+    }
+
+    function save() {
+      const data = {};
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        data[id] = el.type === "number"
+          ? (el.value === "" ? 0 : Number(el.value))
+          : el.value;
+      });
+      localStorage.setItem("troopRatioSettings", JSON.stringify(data));
+    }
+
+    function status(total, target) {
+      if (total === target) return ["Exact", "status-exact"];
+      if (total < target) return ["Under", "status-under"];
+      return ["Over", "status-over"];
+    }
+
+    function table(title, row, target) {
+      const [label, css] = status(row.total, target);
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>${title}</th><th>盾兵</th><th>矛兵</th><th>射手</th><th>總數</th><th>狀態</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${row.name}</td>
+                <td data-label="盾兵">${fmt(row.infantry)}</td>
+                <td data-label="矛兵">${fmt(row.lancer)}</td>
+                <td data-label="射手">${fmt(row.marksman)}</td>
+                <td data-label="總數">${fmt(row.total)}</td>
+                <td data-label="狀態" class="${css}">${label}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function render() {
+      const inf = value("infantry");
+      const lan = value("lancer");
+      const mar = value("marksman");
+      const total = inf + lan + mar;
+
+      document.getElementById("playerDisplay").textContent = value("playerName") || "未命名";
+      document.getElementById("totalTroops").textContent = "總兵力 " + fmt(total);
+
+      const all = total || 1;
+      document.getElementById("totalChart").innerHTML = `
+        <div class="chart-title"><span>總兵力構成</span><span>${fmt(total)}</span></div>
+        <div class="stackbar">
+          <span class="seg inf" style="width:${inf / all * 100}%"></span>
+          <span class="seg lan" style="width:${lan / all * 100}%"></span>
+          <span class="seg mar" style="width:${mar / all * 100}%"></span>
+        </div>
+        <div class="legend">
+          <span class="legend-item"><i class="dot inf"></i>盾 ${fmt(inf)}</span>
+          <span class="legend-item"><i class="dot lan"></i>矛 ${fmt(lan)}</span>
+          <span class="legend-item"><i class="dot mar"></i>射 ${fmt(mar)}</span>
+        </div>`;
+
+      const rInf = value("mainInfRatio");
+      const rLan = value("mainLanRatio");
+      const rMar = value("mainMarRatio");
+      const ratioTotal = rInf + rLan + rMar;
+
+      document.getElementById("mainRatioWarning").textContent =
+        ratioTotal === 100 ? "" : `主隊比例目前合計 ${ratioTotal}%，應為 100%。`;
+
+      const cap = value("withHeroesCap") + value("cyrilleBonus") + value("petBonus");
+      const mainInf = Math.floor(cap * rInf / 100);
+      const mainLan = Math.floor(cap * rLan / 100);
+      const mainMar = Math.max(0, cap - mainInf - mainLan);
+
+      const row = {
+        name: value("playerName") || "主隊",
+        infantry: mainInf,
+        lancer: mainLan,
+        marksman: mainMar,
+        total: mainInf + mainLan + mainMar
+      };
+
+      document.getElementById("mainResult").innerHTML = table("主隊", row, cap);
+    }
+
+    fillOnce();
+    render();
+
+    document.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", () => {
+        save();
+        render();
+      });
+      input.addEventListener("change", () => {
+        save();
+        render();
+      });
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      save();
+      render();
+      alert("設定已儲存");
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      localStorage.removeItem("troopRatioSettings");
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = DEFAULTS[id];
+      });
+      save();
+      render();
+    });
+  })();
+  </script>
 </body>
 </html>
