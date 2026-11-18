@@ -217,20 +217,29 @@ function renderSettings() {
     );
 }
 
+function saveCurrentSettings() {
+  const data = {};
+
+  Object.keys(DEFAULTS).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      data[id] = el.type === "number" ? Number(el.value) : el.value;
+    }
+  });
+
+  localStorage.setItem("troopRatioSettings", JSON.stringify(data));
+}
+
 function setupSettingsEvents() {
   document.querySelectorAll("input").forEach(el => {
-    el.addEventListener("input", renderSettings);
+    el.addEventListener("input", () => {
+      saveCurrentSettings();
+      renderSettings();
+    });
   });
 
   document.getElementById("saveBtn").addEventListener("click", () => {
-    const data = {};
-
-    Object.keys(DEFAULTS).forEach(id => {
-      const el = document.getElementById(id);
-      data[id] = el.type === "number" ? Number(el.value) : el.value;
-    });
-
-    localStorage.setItem("troopRatioSettings", JSON.stringify(data));
+    saveCurrentSettings();
     renderSettings();
     alert("設定已儲存。");
   });
