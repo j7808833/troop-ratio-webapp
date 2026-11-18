@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#07111f">
-  <title>Troop Ratio｜瘋狂的喬伊</title>
+  <title id="pageTitle">Troop Ratio | Crazy Joe</title>
   <link rel="stylesheet" href="style.css?v=20261118-mobile1">
 </head>
 <body data-page="cj">
@@ -16,14 +16,14 @@
       <div class="page-banner-overlay">
         <div>
           <p>CRAZY JOE</p>
-          <strong>瘋狂的喬伊（Crazy Joe）</strong>
+          <strong id="bannerActivityTitle">Crazy Joe</strong>
         </div>
       </div>
     </section>
 
     <header class="hero compact-hero player-only">
       <div class="player-box">
-        <span>玩家</span>
+        <span id="playerLabel">Player</span>
         <strong id="playerDisplay">心碎小狗</strong>
       </div>
     </header>
@@ -32,27 +32,27 @@
 
     <section class="card">
       <div id="cjSummary" class="summary-grid"></div>
-      <p class="hint">保留原 Excel 邏輯：三種兵各自 ÷ 6，再依「盾 → 矛 → 射」填入單隊容量。</p>
+      <p class="hint" id="cjHint">Original Excel logic: divide each troop type by 6, then fill each team in the order Infantry → Lancer → Marksman.</p>
       <div id="cjChart" class="chart-list"></div>
     </section>
 
     <section class="card">
-      <div class="section-head"><h3>詳細配置</h3></div>
+      <div class="section-head"><h3 id="detailTitle">Detailed Configuration</h3></div>
       <div id="cjResult"></div>
     </section>
 
     <section class="card">
-      <div class="section-head"><h3>剩餘可分配兵力</h3></div>
+      <div class="section-head"><h3 id="remainingTitle">Remaining Troops</h3></div>
       <div id="cjRemaining"></div>
     </section>
   </main>
 
   <nav class="bottom-nav">
-    <a href="index.html"><span>設定</span></a>
-    <a href="bear.html"><span>獵熊行動</span></a>
-    <a href="cj.html" class="active"><span>瘋狂的喬伊</span></a>
+    <a href="index.html"><span id="navSettings">Settings</span></a>
+    <a href="bear.html"><span id="navBear">Bear Hunt</span></a>
+    <a href="cj.html" class="active"><span id="navCj">Crazy Joe</span></a>
   </nav>
 
-  <script src="app.js?v=20261118c"></script>
+  <script src="app.js?v=20261118-lang2"></script>
 </body>
 </html>
