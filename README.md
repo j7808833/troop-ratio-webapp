@@ -44,8 +44,8 @@ troop-ratio-webapp/
 - Player Name／玩家名稱
 - March Capacity with Heroes／有英雄出征容量
 - March Capacity without Heroes／無英雄出征容量
-- March Queue／出征隊數：0～6
-- Hero-less Joiner Count／無英雄 Joiner 數量：0～6
+- Normal March Queue／一般出征隊數：0～6
+- Hero-less Marches／無英雄隊數：0～6
 - Joiner Team Limit／Joiner 單隊上限
 - Infantry／盾兵總數
 - Lancer／矛兵總數
@@ -159,19 +159,20 @@ Joiner 盾兵比例：10%
 
 ### 隊伍數量
 
-目前以 March Queue／出征隊數決定可配置隊伍。
+Bear Hunt 的自己發起 Rally 不占一般 March Queue，因此會額外多 1 隊。
 
 ```text
-Joiner 數量 = max(0, 出征隊數 − 1)
+Bear Hunt 可用總隊數 = 一般出征隊數 + 1
+Joiner 數量 = 一般出征隊數
 ```
 
 例如：
 
 ```text
-出征隊數 6 → 主隊 1 + Joiner 5
-出征隊數 4 → 主隊 1 + Joiner 3
-出征隊數 1 → 主隊 1 + Joiner 0
-出征隊數 0 → Joiner 0
+一般出征隊數 6 → Bear Hunt 7 隊 = 主 Rally 1 + Joiner 6
+一般出征隊數 4 → Bear Hunt 5 隊 = 主 Rally 1 + Joiner 4
+一般出征隊數 1 → Bear Hunt 2 隊 = 主 Rally 1 + Joiner 1
+一般出征隊數 0 → Bear Hunt 1 隊 = 主 Rally 1
 ```
 
 ### 主隊
@@ -231,11 +232,13 @@ Infantry／盾兵
 - 不進行除以 0
 - 所有兵力維持在 Remaining Troops／剩餘兵力
 
-## Hero-less Joiner Count／無英雄 Joiner 數量
+## Hero-less Marches／無英雄隊數
 
 目前介面提供 0～6 滑塊並保存設定。
 
-此欄位目前尚未套入 Bear Hunt 的實際兵力分隊公式，因此目前主要作為後續區分「有英雄／無英雄 Joiner」容量邏輯的設定資料。
+Bear Hunt 與 Crazy Joe 都會依此數量，把部分隊伍改用「無英雄出征容量」計算。
+
+Bear Hunt 中，無英雄數量只套用在 Joiner；主 Rally 仍使用有英雄容量。
 
 ## 語言
 
