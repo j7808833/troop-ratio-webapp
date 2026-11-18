@@ -801,3 +801,47 @@ body { padding-bottom: 84px; }
     font-size: 12px;
   }
 }
+
+
+/* Home banner uses local CSS artwork only, so mobile browsers cannot hotlink-fail. */
+.home-banner {
+  background:
+    radial-gradient(circle at 72% 34%, rgba(80, 178, 255, .34), transparent 15%),
+    radial-gradient(circle at 80% 62%, rgba(255, 142, 43, .22), transparent 22%),
+    linear-gradient(135deg, #152d58 0%, #0c1d38 48%, #07111f 100%);
+}
+
+.home-banner-art {
+  position: absolute;
+  inset: 0;
+  opacity: .78;
+  background:
+    linear-gradient(115deg, transparent 0 45%, rgba(119, 200, 255, .14) 45% 46%, transparent 46% 100%),
+    linear-gradient(65deg, transparent 0 57%, rgba(119, 200, 255, .10) 57% 58%, transparent 58% 100%),
+    repeating-linear-gradient(120deg, transparent 0 54px, rgba(255,255,255,.025) 55px 56px);
+}
+
+.home-banner-art::before {
+  content: "";
+  position: absolute;
+  width: 44%;
+  aspect-ratio: 1;
+  right: 4%;
+  top: 10%;
+  border-radius: 50%;
+  border: 1px solid rgba(135, 211, 255, .18);
+  box-shadow:
+    0 0 0 28px rgba(82, 165, 235, .045),
+    0 0 0 58px rgba(82, 165, 235, .025);
+}
+
+.home-banner-art::after {
+  content: "WHITEOUT";
+  position: absolute;
+  right: 7%;
+  bottom: 15%;
+  color: rgba(255,255,255,.055);
+  font-size: clamp(44px, 10vw, 120px);
+  font-weight: 950;
+  letter-spacing: -.05em;
+}
