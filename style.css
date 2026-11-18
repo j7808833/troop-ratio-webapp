@@ -1123,3 +1123,30 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+
+.range-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 46px;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.range-row input[type="range"] {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: #389eea;
+}
+
+.range-value {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(15, 29, 49, .88);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
