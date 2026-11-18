@@ -125,7 +125,7 @@ function mainTeam() {
 
 function calculateBear() {
   const main = mainTeam();
-  const queueCount = Math.max(1, Math.min(6, Math.floor(getValue("marchQueueCount"))));
+  const queueCount = Math.max(0, Math.min(6, Math.floor(getValue("marchQueueCount"))));
   const count = Math.max(0, queueCount - 1);
   const limit = getValue("joinerLimit");
   const remainingMar = getValue("marksman") - main.marksman;
@@ -156,11 +156,11 @@ function calculateBear() {
 }
 
 function calculateCJ() {
-  const count = Math.max(1, Math.min(6, Math.floor(getValue("marchQueueCount"))));
+  const count = Math.max(0, Math.min(6, Math.floor(getValue("marchQueueCount"))));
   const cap = totalRallyCap();
-  const perInf = Math.floor(getValue("infantry") / count);
-  const perLan = Math.floor(getValue("lancer") / count);
-  const perMar = Math.floor(getValue("marksman") / count);
+  const perInf = count > 0 ? Math.floor(getValue("infantry") / count) : 0;
+  const perLan = count > 0 ? Math.floor(getValue("lancer") / count) : 0;
+  const perMar = count > 0 ? Math.floor(getValue("marksman") / count) : 0;
 
   const teams = Array.from({ length: count }, (_, i) => {
     let remaining = cap;
