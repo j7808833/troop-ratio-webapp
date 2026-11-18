@@ -120,12 +120,12 @@ function marchCapacity(withHeroes = true) {
     ? getValue("withHeroesCap") + getValue("cyrilleBonus")
     : getValue("withoutHeroesCap");
 
-  const fixedCap =
+  const preMinisterCap =
     base +
-    getValue("petBonus") +
-    getValue("ministerBonus");
+    getValue("petBonus");
 
-  return Math.floor(fixedCap * (1 + getValue("deploymentBoost") / 100));
+  return Math.floor(preMinisterCap * (1 + getValue("deploymentBoost") / 100))
+    + getValue("ministerBonus");
 }
 
 function totalRallyCap() {
