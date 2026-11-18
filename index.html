@@ -79,7 +79,16 @@
           </select>
         </label>
         <label><span id="labelJoinerLimit">Joiner Team Limit</span><input id="joinerLimit" type="number" value="97000" min="0"></label>
-        <label><span id="labelJoinerCount">Joiner Count</span><input id="joinerCount" type="number" value="5" min="1" max="6"></label>
+        <label><span id="labelMarchQueue">March Queue</span>
+          <select id="marchQueueCount">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6" selected>6</option>
+          </select>
+        </label>
         <label><span id="labelHeroLess">Hero-less Joiner Count</span><input id="heroLessJoinerCount" type="number" value="1" min="0" max="6"></label>
       </div>
     </section>
@@ -115,6 +124,19 @@
             <option value="130000">Lv.80 · +130,000</option>
             <option value="140000">Lv.90 · +140,000</option>
             <option value="150000">Lv.100 · +150,000</option>
+          </select>
+        </label>
+        <label><span id="labelMinister">Minister of Strategy</span>
+          <select id="ministerBonus">
+            <option value="0" data-en="None · +0" data-zh="無 · +0">None · +0</option>
+            <option value="2500" data-en="Normal · +2,500" data-zh="戰略部長 · +2,500">Normal · +2,500</option>
+            <option value="3750" data-en="Supreme · +3,750" data-zh="至高戰略部長 · +3,750">Supreme · +3,750</option>
+          </select>
+        </label>
+        <label><span id="labelDeploymentBoost">Deployment Capacity Boost</span>
+          <select id="deploymentBoost">
+            <option value="0" data-en="Off" data-zh="關閉">Off</option>
+            <option value="10" data-en="+10%" data-zh="+10%">+10%</option>
           </select>
         </label>
       </div>
@@ -179,6 +201,9 @@
       petBonus: 0,
       cyrilleRallyBonus: 0,
       petRallyBonus: 0,
+      ministerBonus: 0,
+      deploymentBoost: 0,
+      marchQueueCount: 6,
       joinerLimit: 97000,
       joinerCount: 5,
       infantry: 278686,
@@ -209,6 +234,9 @@
         capacityBuffTitle: "Capacity Buffs",
         labelCyrilleRally: "Cyrille — Entrapment",
         labelPetRally: "Iron Rhino — Rallying Beasts",
+        labelMinister: "Minister of Strategy",
+        labelDeploymentBoost: "Deployment Capacity Boost",
+        labelMarchQueue: "March Queue",
         marchBonusLabel: "March Capacity Bonus",
         rallyBonusLabel: "Rally Capacity Bonus",
         capacityBuffHint: "March-capacity buffs affect your own dispatched squad. Rally-capacity buffs affect the rally total and are not added to a single squad.",
@@ -251,6 +279,9 @@
         capacityBuffTitle: "容量加成",
         labelCyrilleRally: "西里爾 — 四方圍獵",
         labelPetRally: "板齒犀 — 集結獸群",
+        labelMinister: "戰略部長",
+        labelDeploymentBoost: "出征容量增益",
+        labelMarchQueue: "出征隊數",
         marchBonusLabel: "出征容量加成",
         rallyBonusLabel: "集結容量加成",
         capacityBuffHint: "出征容量加成會影響自己的單隊容量；集結容量加成只影響整體集結上限，不會加到單隊容量。",
@@ -288,8 +319,9 @@
       const textIds = [
         "playerLabel","bannerTitle","settingsTitle","settingsDesc","basicTitle",
         "labelPlayerName","labelWithHeroes","labelWithoutHeroes","labelCyrille","labelPet",
-        "capacityBuffTitle","labelCyrilleRally","labelPetRally","marchBonusLabel","rallyBonusLabel","capacityBuffHint",
-        "labelJoinerLimit","labelJoinerCount","labelHeroLess","totalTitle","labelInfantry",
+        "capacityBuffTitle","labelCyrilleRally","labelPetRally","labelMinister","labelDeploymentBoost",
+        "labelMarchQueue","marchBonusLabel","rallyBonusLabel","capacityBuffHint",
+        "labelJoinerLimit","labelHeroLess","totalTitle","labelInfantry",
         "labelLancer","labelMarksman","mainRatioTitle","labelMainInf","labelMainLan",
         "labelMainMar","bearJoinerTitle","labelJoinerInf","navSettings","navBear","navCj"
       ];
@@ -301,6 +333,9 @@
       document.getElementById("resetBtn").textContent = t.reset;
       document.getElementById("langEn").classList.toggle("active", lang === "en");
       document.getElementById("langZh").classList.toggle("active", lang === "zh");
+      document.querySelectorAll("option[data-en][data-zh]").forEach(option => {
+        option.textContent = option.dataset[lang];
+      });
       document.documentElement.lang = lang === "en" ? "en" : "zh-Hant";
       render();
     }
@@ -393,7 +428,10 @@
 
       document.getElementById("playerDisplay").textContent = value("playerName") || I18N[language].unnamed;
       document.getElementById("totalTroops").textContent = I18N[language].totalTroops + " " + fmt(total);
-      const marchBonus = value("cyrilleBonus") + value("petBonus");
+      const fixedMarchBonus = value("cyrilleBonus") + value("petBonus") + value("ministerBonus");
+      const preBoostCap = value("withHeroesCap") + fixedMarchBonus;
+      const percentBonus = Math.floor(preBoostCap * value("deploymentBoost") / 100);
+      const marchBonus = fixedMarchBonus + percentBonus;
       const rallyBonus = value("cyrilleRallyBonus") + value("petRallyBonus");
       document.getElementById("marchBonusValue").textContent = "+" + fmt(marchBonus);
       document.getElementById("rallyBonusValue").textContent = "+" + fmt(rallyBonus);
@@ -420,7 +458,8 @@
       document.getElementById("mainRatioWarning").textContent =
         ratioTotal === 100 ? "" : I18N[language].ratioWarning.replace("{n}", ratioTotal);
 
-      const cap = value("withHeroesCap") + value("cyrilleBonus") + value("petBonus");
+      const fixedCap = value("withHeroesCap") + value("cyrilleBonus") + value("petBonus") + value("ministerBonus");
+      const cap = Math.floor(fixedCap * (1 + value("deploymentBoost") / 100));
       const mainInf = Math.floor(cap * rInf / 100);
       const mainLan = Math.floor(cap * rLan / 100);
       const mainMar = Math.max(0, cap - mainInf - mainLan);
