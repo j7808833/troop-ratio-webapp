@@ -51,7 +51,8 @@ const T = {
     under: "Under",
     over: "Over",
     mainTeam: "Main Team",
-    marchQueue: "March Queue",
+    marchQueue: "Normal March Queue",
+    bearTeams: "Bear Hunt Teams",
     heroLess: "Hero-less Teams",
     heroJoiner: "Hero Joiner",
     heroLessJoiner: "Hero-less Joiner"
@@ -82,7 +83,8 @@ const T = {
     under: "不足",
     over: "超出",
     mainTeam: "主隊",
-    marchQueue: "出征隊數",
+    marchQueue: "一般出征隊數",
+    bearTeams: "獵熊可用隊數",
     heroLess: "無英雄隊數",
     heroJoiner: "有英雄 Joiner",
     heroLessJoiner: "無英雄 Joiner"
@@ -140,21 +142,10 @@ function mainTeam() {
 
 function calculateBear() {
   const queueCount = Math.max(0, Math.min(6, Math.floor(getValue("marchQueueCount"))));
-
-  if (queueCount === 0) {
-    return {
-      main: null,
-      teams: [],
-      remaining: {
-        infantry: getValue("infantry"),
-        lancer: getValue("lancer"),
-        marksman: getValue("marksman")
-      }
-    };
-  }
-
   const main = mainTeam();
-  const count = Math.max(0, queueCount - 1);
+
+  // Bear Hunt's own rally is an extra free march.
+  const count = queueCount;
   const heroLessCount = Math.min(count, Math.max(0, Math.floor(getValue("heroLessJoinerCount"))));
   const heroCount = count - heroLessCount;
   const remainingMar = getValue("marksman") - main.marksman;
@@ -178,6 +169,7 @@ function calculateBear() {
       lancer,
       marksman,
       total: infantry + lancer + marksman,
+      target: limit,
       heroLess
     };
   });
@@ -218,6 +210,7 @@ function calculateCJ() {
       lancer,
       marksman,
       total: infantry + lancer + marksman,
+      target: cap,
       heroLess
     };
   });
@@ -245,7 +238,8 @@ function teamTable(title, rows, target) {
         <thead><tr><th>${title}</th><th>${T.infantry}</th><th>${T.lancer}</th><th>${T.marksman}</th><th>${T.total}</th><th>${T.status}</th></tr></thead>
         <tbody>
           ${rows.map(row => {
-            const [label, css] = status(row.total, target);
+            const rowTarget = row.target ?? target;
+            const [label, css] = status(row.total, rowTarget);
             return `<tr>
               <td>${row.name}</td>
               <td data-label="${T.infantry}">${fmt(row.infantry)}</td>
@@ -410,21 +404,22 @@ function applyActivityLanguage() {
 function renderBear() {
   document.getElementById("playerDisplay").textContent = getValue("playerName");
   const bear = calculateBear();
-  const rows = bear.main
-    ? [{ name:getValue("playerName"), ...bear.main }, ...bear.teams]
-    : [];
+  const mainRow = {
+    name: getValue("playerName"),
+    ...bear.main,
+    target: marchCapacity(true)
+  };
+  const rows = [mainRow, ...bear.teams];
 
   renderSummary("bearSummary", [
     { label:T.marchQueue, value:String(getValue("marchQueueCount")) },
+    { label:T.bearTeams, value:String(rows.length) },
     { label:T.heroLess, value:String(Math.min(bear.teams.length, getValue("heroLessJoinerCount"))) },
-    { label:T.mainCapacity, value:bear.main ? fmt(bear.main.total) : "0" },
-    { label:T.joiner, value:language === "en" ? `${bear.teams.length} teams` : `${bear.teams.length} 隊` }
+    { label:T.mainCapacity, value:fmt(bear.main.total) }
   ]);
 
   document.getElementById("bearChart").innerHTML = rows.map(r => stackBar(r, r.name)).join("");
-  document.getElementById("bearResult").innerHTML = rows.length
-    ? teamTable(T.bear, rows, getValue("joinerLimit"))
-    : "";
+  document.getElementById("bearResult").innerHTML = teamTable(T.bear, rows, getValue("joinerLimit"));
   document.getElementById("bearRemaining").innerHTML = remainingTable(bear.remaining);
 }
 
