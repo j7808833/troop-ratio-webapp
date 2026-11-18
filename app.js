@@ -157,11 +157,11 @@ function teamTable(title, rows, target) {
     return `
       <tr>
         <td>${row.name}</td>
-        <td>${fmt(row.infantry)}</td>
-        <td>${fmt(row.lancer)}</td>
-        <td>${fmt(row.marksman)}</td>
-        <td>${fmt(row.total)}</td>
-        <td class="${css}">${label}</td>
+        <td data-label="盾兵">${fmt(row.infantry)}</td>
+        <td data-label="矛兵">${fmt(row.lancer)}</td>
+        <td data-label="射手">${fmt(row.marksman)}</td>
+        <td data-label="總數">${fmt(row.total)}</td>
+        <td data-label="狀態" class="${css}">${label}</td>
       </tr>
     `;
   }).join("");
@@ -200,9 +200,9 @@ function remainingTable(data) {
           </tr>
         </thead>
         <tbody>
-          <tr><td>Infantry 盾兵</td><td class="${cls(data.infantry)}">${fmt(data.infantry)}</td></tr>
-          <tr><td>Lancer 矛兵</td><td class="${cls(data.lancer)}">${fmt(data.lancer)}</td></tr>
-          <tr><td>Marksman 射手</td><td class="${cls(data.marksman)}">${fmt(data.marksman)}</td></tr>
+          <tr><td>Infantry 盾兵</td><td data-label="剩餘" class="${cls(data.infantry)}">${fmt(data.infantry)}</td></tr>
+          <tr><td>Lancer 矛兵</td><td data-label="剩餘" class="${cls(data.lancer)}">${fmt(data.lancer)}</td></tr>
+          <tr><td>Marksman 射手</td><td data-label="剩餘" class="${cls(data.marksman)}">${fmt(data.marksman)}</td></tr>
         </tbody>
       </table>
     </div>
