@@ -48,12 +48,81 @@
         <label><span id="labelPlayerName">Player Name</span><input id="playerName" type="text" value="心碎小狗"></label>
         <label><span id="labelWithHeroes">March Capacity with Heroes</span><input id="withHeroesCap" type="number" value="147810" min="0"></label>
         <label><span id="labelWithoutHeroes">March Capacity without Heroes</span><input id="withoutHeroesCap" type="number" value="107400" min="0"></label>
-        <label><span id="labelCyrille">Cyrille Capacity Bonus</span><input id="cyrilleBonus" type="number" value="0" min="0"></label>
-        <label><span id="labelPet">Pet Skill Capacity Bonus</span><input id="petBonus" type="number" value="0" min="0"></label>
+        <label><span id="labelCyrille">Cyrille — Ursa's Bane</span>
+          <select id="cyrilleBonus">
+            <option value="0">Lv.0 · +0</option>
+            <option value="3000">Lv.1 · +3,000</option>
+            <option value="6000">Lv.2 · +6,000</option>
+            <option value="9000">Lv.3 · +9,000</option>
+            <option value="12000">Lv.4 · +12,000</option>
+            <option value="15000">Lv.5 · +15,000</option>
+            <option value="18000">Lv.6 · +18,000</option>
+            <option value="21000">Lv.7 · +21,000</option>
+            <option value="24000">Lv.8 · +24,000</option>
+            <option value="27000">Lv.9 · +27,000</option>
+            <option value="30000">Lv.10 · +30,000</option>
+          </select>
+        </label>
+        <label><span id="labelPet">Snow Ape — Tumbling Power</span>
+          <select id="petBonus">
+            <option value="0">Not active · +0</option>
+            <option value="1500">Lv.10 · +1,500</option>
+            <option value="3000">Lv.20 · +3,000</option>
+            <option value="4500">Lv.30 · +4,500</option>
+            <option value="6000">Lv.40 · +6,000</option>
+            <option value="7500">Lv.50 · +7,500</option>
+            <option value="9000">Lv.60 · +9,000</option>
+            <option value="10500">Lv.70 · +10,500</option>
+            <option value="12000">Lv.80 · +12,000</option>
+            <option value="13500">Lv.90 · +13,500</option>
+            <option value="15000">Lv.100 · +15,000</option>
+          </select>
+        </label>
         <label><span id="labelJoinerLimit">Joiner Team Limit</span><input id="joinerLimit" type="number" value="97000" min="0"></label>
         <label><span id="labelJoinerCount">Joiner Count</span><input id="joinerCount" type="number" value="5" min="1" max="6"></label>
         <label><span id="labelHeroLess">Hero-less Joiner Count</span><input id="heroLessJoinerCount" type="number" value="1" min="0" max="6"></label>
       </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head"><h3 id="capacityBuffTitle">Capacity Buffs</h3></div>
+      <div class="input-grid two">
+        <label><span id="labelCyrilleRally">Cyrille — Entrapment</span>
+          <select id="cyrilleRallyBonus">
+            <option value="0">Lv.0 · +0</option>
+            <option value="30000">Lv.1 · +30,000</option>
+            <option value="60000">Lv.2 · +60,000</option>
+            <option value="90000">Lv.3 · +90,000</option>
+            <option value="120000">Lv.4 · +120,000</option>
+            <option value="150000">Lv.5 · +150,000</option>
+            <option value="180000">Lv.6 · +180,000</option>
+            <option value="210000">Lv.7 · +210,000</option>
+            <option value="240000">Lv.8 · +240,000</option>
+            <option value="270000">Lv.9 · +270,000</option>
+            <option value="300000">Lv.10 · +300,000</option>
+          </select>
+        </label>
+        <label><span id="labelPetRally">Iron Rhino — Rallying Beasts</span>
+          <select id="petRallyBonus">
+            <option value="0">Not active · +0</option>
+            <option value="60000">Lv.10 · +60,000</option>
+            <option value="70000">Lv.20 · +70,000</option>
+            <option value="80000">Lv.30 · +80,000</option>
+            <option value="90000">Lv.40 · +90,000</option>
+            <option value="100000">Lv.50 · +100,000</option>
+            <option value="110000">Lv.60 · +110,000</option>
+            <option value="120000">Lv.70 · +120,000</option>
+            <option value="130000">Lv.80 · +130,000</option>
+            <option value="140000">Lv.90 · +140,000</option>
+            <option value="150000">Lv.100 · +150,000</option>
+          </select>
+        </label>
+      </div>
+      <div class="summary-grid two-summary">
+        <div class="summary-tile"><span id="marchBonusLabel">March Capacity Bonus</span><strong id="marchBonusValue">+0</strong></div>
+        <div class="summary-tile"><span id="rallyBonusLabel">Rally Capacity Bonus</span><strong id="rallyBonusValue">+0</strong></div>
+      </div>
+      <p class="hint" id="capacityBuffHint">March-capacity buffs affect your own dispatched squad. Rally-capacity buffs affect the rally total and are not added to a single squad.</p>
     </section>
 
     <section class="card">
@@ -108,6 +177,8 @@
       withoutHeroesCap: 107400,
       cyrilleBonus: 0,
       petBonus: 0,
+      cyrilleRallyBonus: 0,
+      petRallyBonus: 0,
       joinerLimit: 97000,
       joinerCount: 5,
       infantry: 278686,
@@ -133,8 +204,14 @@
         labelPlayerName: "Player Name",
         labelWithHeroes: "March Capacity with Heroes",
         labelWithoutHeroes: "March Capacity without Heroes",
-        labelCyrille: "Cyrille Capacity Bonus",
-        labelPet: "Pet Skill Capacity Bonus",
+        labelCyrille: "Cyrille — Ursa's Bane",
+        labelPet: "Snow Ape — Tumbling Power",
+        capacityBuffTitle: "Capacity Buffs",
+        labelCyrilleRally: "Cyrille — Entrapment",
+        labelPetRally: "Iron Rhino — Rallying Beasts",
+        marchBonusLabel: "March Capacity Bonus",
+        rallyBonusLabel: "Rally Capacity Bonus",
+        capacityBuffHint: "March-capacity buffs affect your own dispatched squad. Rally-capacity buffs affect the rally total and are not added to a single squad.",
         labelJoinerLimit: "Joiner Team Limit",
         labelJoinerCount: "Joiner Count",
         labelHeroLess: "Hero-less Joiner Count",
@@ -169,8 +246,14 @@
         labelPlayerName: "玩家名稱",
         labelWithHeroes: "有英雄出征容量",
         labelWithoutHeroes: "無英雄出征容量",
-        labelCyrille: "Cyrille 容量加成",
-        labelPet: "Pet Skill 容量加成",
+        labelCyrille: "西里爾 — 巨熊剋星",
+        labelPet: "雪猿 — 翻滾之力",
+        capacityBuffTitle: "容量加成",
+        labelCyrilleRally: "西里爾 — 四方圍獵",
+        labelPetRally: "板齒犀 — 集結獸群",
+        marchBonusLabel: "出征容量加成",
+        rallyBonusLabel: "集結容量加成",
+        capacityBuffHint: "出征容量加成會影響自己的單隊容量；集結容量加成只影響整體集結上限，不會加到單隊容量。",
         labelJoinerLimit: "Joiner 單隊上限",
         labelJoinerCount: "Joiner 數量",
         labelHeroLess: "無英雄 Joiner 數量",
@@ -204,6 +287,7 @@
       const textIds = [
         "playerLabel","bannerTitle","settingsTitle","settingsDesc","basicTitle",
         "labelPlayerName","labelWithHeroes","labelWithoutHeroes","labelCyrille","labelPet",
+        "capacityBuffTitle","labelCyrilleRally","labelPetRally","marchBonusLabel","rallyBonusLabel","capacityBuffHint",
         "labelJoinerLimit","labelJoinerCount","labelHeroLess","totalTitle","labelInfantry",
         "labelLancer","labelMarksman","mainRatioTitle","labelMainInf","labelMainLan",
         "labelMainMar","bearJoinerTitle","labelJoinerInf","navSettings","navBear","navCj"
@@ -240,7 +324,7 @@
     function value(id) {
       const el = document.getElementById(id);
       if (!el) return 0;
-      if (el.type === "number") return el.value === "" ? 0 : Number(el.value);
+      if (typeof DEFAULTS[id] === "number") return el.value === "" ? 0 : Number(el.value);
       return el.value;
     }
 
@@ -253,7 +337,7 @@
       ids.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        data[id] = el.type === "number"
+        data[id] = typeof DEFAULTS[id] === "number"
           ? (el.value === "" ? 0 : Number(el.value))
           : el.value;
       });
@@ -298,6 +382,10 @@
 
       document.getElementById("playerDisplay").textContent = value("playerName") || I18N[language].unnamed;
       document.getElementById("totalTroops").textContent = I18N[language].totalTroops + " " + fmt(total);
+      const marchBonus = value("cyrilleBonus") + value("petBonus");
+      const rallyBonus = value("cyrilleRallyBonus") + value("petRallyBonus");
+      document.getElementById("marchBonusValue").textContent = "+" + fmt(marchBonus);
+      document.getElementById("rallyBonusValue").textContent = "+" + fmt(rallyBonus);
 
       const all = total || 1;
       document.getElementById("totalChart").innerHTML = `
@@ -343,7 +431,7 @@
     document.getElementById("langEn").addEventListener("click", () => applyLanguage("en"));
     document.getElementById("langZh").addEventListener("click", () => applyLanguage("zh"));
 
-    document.querySelectorAll("input").forEach(input => {
+    document.querySelectorAll("input, select").forEach(input => {
       input.addEventListener("input", () => {
         save();
         render();
