@@ -7,89 +7,96 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#07111f">
-  <title>Troop Ratio｜設定</title>
+  <title>Troop Ratio | Settings</title>
   <link rel="stylesheet" href="style.css?v=20261118-mobile1">
 </head>
 <body data-page="settings">
-  <main class="app">
-    <header class="hero player-only">
-      <div class="player-box">
-        <span>玩家</span>
-        <strong id="playerDisplay">心碎小狗</strong>
-      </div>
-    </header>
-
-    <section class="page-banner home-banner" aria-label="Whiteout Survival">
+  <main class="app"><section class="page-banner home-banner" aria-label="Whiteout Survival">
       <img src="assets/home.png?v=20261118-user1" alt="Whiteout Survival">
       <div class="page-banner-overlay">
         <div>
           <p>WHITEOUT SURVIVAL</p>
-          <strong>活動兵力配置計算器</strong>
+          <strong id="bannerTitle">Troop Configuration Calculator</strong>
         </div>
       </div>
     </section>
 
+    <header class="hero player-only">
+      <div class="player-toolbar">
+        <div class="player-box">
+          <span id="playerLabel">Player</span>
+          <strong id="playerDisplay">心碎小狗</strong>
+        </div>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" id="langEn" class="active">EN</button>
+          <button type="button" id="langZh">中文</button>
+        </div>
+      </div>
+    </header>
+
+    
+
     <section class="page-title">
       <p class="kicker">Settings</p>
-      <h2>設定</h2>
-      <p>所有資料只需在這裡輸入一次，獵熊行動與瘋狂的喬伊頁面會直接讀取。</p>
+      <h2 id="settingsTitle">Settings</h2>
+      <p id="settingsDesc">Enter your data once here. Bear Hunt and Crazy Joe will use these settings automatically.</p>
     </section>
 
     <section class="card">
-      <div class="section-head"><h3>基本資料</h3></div>
+      <div class="section-head"><h3 id="basicTitle">Basic Information</h3></div>
       <div class="input-grid">
-        <label>玩家名稱<input id="playerName" type="text" value="心碎小狗"></label>
-        <label>有英雄出征容量<input id="withHeroesCap" type="number" value="147810" min="0"></label>
-        <label>無英雄出征容量<input id="withoutHeroesCap" type="number" value="107400" min="0"></label>
-        <label>Cyrille 容量加成<input id="cyrilleBonus" type="number" value="0" min="0"></label>
-        <label>Pet Skill 容量加成<input id="petBonus" type="number" value="0" min="0"></label>
-        <label>Joiner 單隊上限<input id="joinerLimit" type="number" value="97000" min="0"></label>
-        <label>Joiner 數量<input id="joinerCount" type="number" value="5" min="1" max="6"></label>
-        <label>無英雄 Joiner 數量<input id="heroLessJoinerCount" type="number" value="1" min="0" max="6"></label>
+        <label><span id="labelPlayerName">Player Name</span><input id="playerName" type="text" value="心碎小狗"></label>
+        <label><span id="labelWithHeroes">March Capacity with Heroes</span><input id="withHeroesCap" type="number" value="147810" min="0"></label>
+        <label><span id="labelWithoutHeroes">March Capacity without Heroes</span><input id="withoutHeroesCap" type="number" value="107400" min="0"></label>
+        <label><span id="labelCyrille">Cyrille Capacity Bonus</span><input id="cyrilleBonus" type="number" value="0" min="0"></label>
+        <label><span id="labelPet">Pet Skill Capacity Bonus</span><input id="petBonus" type="number" value="0" min="0"></label>
+        <label><span id="labelJoinerLimit">Joiner Team Limit</span><input id="joinerLimit" type="number" value="97000" min="0"></label>
+        <label><span id="labelJoinerCount">Joiner Count</span><input id="joinerCount" type="number" value="5" min="1" max="6"></label>
+        <label><span id="labelHeroLess">Hero-less Joiner Count</span><input id="heroLessJoinerCount" type="number" value="1" min="0" max="6"></label>
       </div>
     </section>
 
     <section class="card">
       <div class="section-head">
-        <h3>總兵力</h3>
+        <h3 id="totalTitle">Total Troops</h3>
         <div id="totalTroops" class="metric-pill"></div>
       </div>
       <div class="input-grid three">
-        <label>盾兵 Infantry<input id="infantry" type="number" value="278686" min="0"></label>
-        <label>矛兵 Lancer<input id="lancer" type="number" value="230332" min="0"></label>
-        <label>射手 Marksman<input id="marksman" type="number" value="314377" min="0"></label>
+        <label><span id="labelInfantry">Infantry</span><input id="infantry" type="number" value="278686" min="0"></label>
+        <label><span id="labelLancer">Lancer</span><input id="lancer" type="number" value="230332" min="0"></label>
+        <label><span id="labelMarksman">Marksman</span><input id="marksman" type="number" value="314377" min="0"></label>
       </div>
       <div id="totalChart" class="chart-card"></div>
     </section>
 
     <section class="card">
-      <div class="section-head"><h3>主隊比例</h3></div>
+      <div class="section-head"><h3 id="mainRatioTitle">Main Team Ratio</h3></div>
       <div class="input-grid three">
-        <label>盾兵比例 %<input id="mainInfRatio" type="number" value="50" min="0" max="100"></label>
-        <label>矛兵比例 %<input id="mainLanRatio" type="number" value="20" min="0" max="100"></label>
-        <label>射手比例 %<input id="mainMarRatio" type="number" value="30" min="0" max="100"></label>
+        <label><span id="labelMainInf">Infantry Ratio %</span><input id="mainInfRatio" type="number" value="50" min="0" max="100"></label>
+        <label><span id="labelMainLan">Lancer Ratio %</span><input id="mainLanRatio" type="number" value="20" min="0" max="100"></label>
+        <label><span id="labelMainMar">Marksman Ratio %</span><input id="mainMarRatio" type="number" value="30" min="0" max="100"></label>
       </div>
       <div id="mainRatioWarning" class="warning"></div>
       <div id="mainResult"></div>
     </section>
 
     <section class="card">
-      <div class="section-head"><h3>獵熊行動加入者設定</h3></div>
+      <div class="section-head"><h3 id="bearJoinerTitle">Bear Hunt Joiner Settings</h3></div>
       <div class="input-grid two compact">
-        <label>Joiner 盾兵比例 %<input id="joinerInfRatio" type="number" value="10" min="0" max="100"></label>
+        <label><span id="labelJoinerInf">Joiner Infantry Ratio %</span><input id="joinerInfRatio" type="number" value="10" min="0" max="100"></label>
       </div>
     </section>
 
     <section class="card actions">
-      <button id="saveBtn">儲存設定</button>
-      <button id="resetBtn" class="secondary">恢復預設值</button>
+      <button id="saveBtn">Save Settings</button>
+      <button id="resetBtn" class="secondary">Reset Defaults</button>
     </section>
   </main>
 
   <nav class="bottom-nav">
-    <a href="index.html" class="active"><span>設定</span></a>
-    <a href="bear.html"><span>獵熊行動</span></a>
-    <a href="cj.html"><span>瘋狂的喬伊</span></a>
+    <a href="index.html" class="active"><span id="navSettings">Settings</span></a>
+    <a href="bear.html"><span id="navBear">Bear Hunt</span></a>
+    <a href="cj.html"><span id="navCj">Crazy Joe</span></a>
   </nav>
 
   
@@ -114,6 +121,104 @@
     };
 
     const ids = Object.keys(DEFAULTS);
+    let language = "en";
+
+    const I18N = {
+      en: {
+        playerLabel: "Player",
+        bannerTitle: "Troop Configuration Calculator",
+        settingsTitle: "Settings",
+        settingsDesc: "Enter your data once here. Bear Hunt and Crazy Joe will use these settings automatically.",
+        basicTitle: "Basic Information",
+        labelPlayerName: "Player Name",
+        labelWithHeroes: "March Capacity with Heroes",
+        labelWithoutHeroes: "March Capacity without Heroes",
+        labelCyrille: "Cyrille Capacity Bonus",
+        labelPet: "Pet Skill Capacity Bonus",
+        labelJoinerLimit: "Joiner Team Limit",
+        labelJoinerCount: "Joiner Count",
+        labelHeroLess: "Hero-less Joiner Count",
+        totalTitle: "Total Troops",
+        labelInfantry: "Infantry",
+        labelLancer: "Lancer",
+        labelMarksman: "Marksman",
+        mainRatioTitle: "Main Team Ratio",
+        labelMainInf: "Infantry Ratio %",
+        labelMainLan: "Lancer Ratio %",
+        labelMainMar: "Marksman Ratio %",
+        bearJoinerTitle: "Bear Hunt Joiner Settings",
+        labelJoinerInf: "Joiner Infantry Ratio %",
+        save: "Save Settings",
+        reset: "Reset Defaults",
+        navSettings: "Settings",
+        navBear: "Bear Hunt",
+        navCj: "Crazy Joe",
+        totalTroops: "Total Troops",
+        composition: "Troop Composition",
+        mainTeam: "Main Team",
+        ratioWarning: "Main team ratio totals {n}%. It should be 100%.",
+        unnamed: "Unnamed",
+        saved: "Settings saved"
+      },
+      zh: {
+        playerLabel: "玩家",
+        bannerTitle: "活動兵力配置計算器",
+        settingsTitle: "設定",
+        settingsDesc: "所有資料只需在這裡輸入一次，獵熊行動與瘋狂的喬伊頁面會直接讀取。",
+        basicTitle: "基本資料",
+        labelPlayerName: "玩家名稱",
+        labelWithHeroes: "有英雄出征容量",
+        labelWithoutHeroes: "無英雄出征容量",
+        labelCyrille: "Cyrille 容量加成",
+        labelPet: "Pet Skill 容量加成",
+        labelJoinerLimit: "Joiner 單隊上限",
+        labelJoinerCount: "Joiner 數量",
+        labelHeroLess: "無英雄 Joiner 數量",
+        totalTitle: "總兵力",
+        labelInfantry: "盾兵 Infantry",
+        labelLancer: "矛兵 Lancer",
+        labelMarksman: "射手 Marksman",
+        mainRatioTitle: "主隊比例",
+        labelMainInf: "盾兵比例 %",
+        labelMainLan: "矛兵比例 %",
+        labelMainMar: "射手比例 %",
+        bearJoinerTitle: "獵熊行動加入者設定",
+        labelJoinerInf: "Joiner 盾兵比例 %",
+        save: "儲存設定",
+        reset: "恢復預設值",
+        navSettings: "設定",
+        navBear: "獵熊行動",
+        navCj: "瘋狂的喬伊",
+        totalTroops: "總兵力",
+        composition: "總兵力構成",
+        mainTeam: "主隊",
+        ratioWarning: "主隊比例目前合計 {n}%，應為 100%。",
+        unnamed: "未命名",
+        saved: "設定已儲存"
+      }
+    };
+
+    function applyLanguage(lang) {
+      language = lang;
+      const t = I18N[lang];
+      const textIds = [
+        "playerLabel","bannerTitle","settingsTitle","settingsDesc","basicTitle",
+        "labelPlayerName","labelWithHeroes","labelWithoutHeroes","labelCyrille","labelPet",
+        "labelJoinerLimit","labelJoinerCount","labelHeroLess","totalTitle","labelInfantry",
+        "labelLancer","labelMarksman","mainRatioTitle","labelMainInf","labelMainLan",
+        "labelMainMar","bearJoinerTitle","labelJoinerInf","navSettings","navBear","navCj"
+      ];
+      textIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = t[id];
+      });
+      document.getElementById("saveBtn").textContent = t.save;
+      document.getElementById("resetBtn").textContent = t.reset;
+      document.getElementById("langEn").classList.toggle("active", lang === "en");
+      document.getElementById("langZh").classList.toggle("active", lang === "zh");
+      document.documentElement.lang = lang === "en" ? "en" : "zh-Hant";
+      render();
+    }
 
     function readSaved() {
       try {
@@ -191,12 +296,12 @@
       const mar = value("marksman");
       const total = inf + lan + mar;
 
-      document.getElementById("playerDisplay").textContent = value("playerName") || "未命名";
-      document.getElementById("totalTroops").textContent = "總兵力 " + fmt(total);
+      document.getElementById("playerDisplay").textContent = value("playerName") || I18N[language].unnamed;
+      document.getElementById("totalTroops").textContent = I18N[language].totalTroops + " " + fmt(total);
 
       const all = total || 1;
       document.getElementById("totalChart").innerHTML = `
-        <div class="chart-title"><span>總兵力構成</span><span>${fmt(total)}</span></div>
+        <div class="chart-title"><span>${I18N[language].composition}</span><span>${fmt(total)}</span></div>
         <div class="stackbar">
           <span class="seg inf" style="width:${inf / all * 100}%"></span>
           <span class="seg lan" style="width:${lan / all * 100}%"></span>
@@ -214,7 +319,7 @@
       const ratioTotal = rInf + rLan + rMar;
 
       document.getElementById("mainRatioWarning").textContent =
-        ratioTotal === 100 ? "" : `主隊比例目前合計 ${ratioTotal}%，應為 100%。`;
+        ratioTotal === 100 ? "" : I18N[language].ratioWarning.replace("{n}", ratioTotal);
 
       const cap = value("withHeroesCap") + value("cyrilleBonus") + value("petBonus");
       const mainInf = Math.floor(cap * rInf / 100);
@@ -222,18 +327,21 @@
       const mainMar = Math.max(0, cap - mainInf - mainLan);
 
       const row = {
-        name: value("playerName") || "主隊",
+        name: value("playerName") || I18N[language].mainTeam,
         infantry: mainInf,
         lancer: mainLan,
         marksman: mainMar,
         total: mainInf + mainLan + mainMar
       };
 
-      document.getElementById("mainResult").innerHTML = table("主隊", row, cap);
+      document.getElementById("mainResult").innerHTML = table(I18N[language].mainTeam, row, cap);
     }
 
     fillOnce();
-    render();
+    applyLanguage("en");
+
+    document.getElementById("langEn").addEventListener("click", () => applyLanguage("en"));
+    document.getElementById("langZh").addEventListener("click", () => applyLanguage("zh"));
 
     document.querySelectorAll("input").forEach(input => {
       input.addEventListener("input", () => {
@@ -249,7 +357,7 @@
     document.getElementById("saveBtn").addEventListener("click", () => {
       save();
       render();
-      alert("設定已儲存");
+      alert(I18N[language].saved);
     });
 
     document.getElementById("resetBtn").addEventListener("click", () => {
