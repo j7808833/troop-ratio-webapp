@@ -192,7 +192,7 @@
     };
 
     const ids = Object.keys(DEFAULTS);
-    let language = "en";
+    let language = localStorage.getItem("troopRatioLanguage") || "en";
 
     const I18N = {
       en: {
@@ -283,6 +283,7 @@
 
     function applyLanguage(lang) {
       language = lang;
+      localStorage.setItem("troopRatioLanguage", lang);
       const t = I18N[lang];
       const textIds = [
         "playerLabel","bannerTitle","settingsTitle","settingsDesc","basicTitle",
@@ -315,6 +316,10 @@
 
     function fillOnce() {
       const data = readSaved();
+      if (data.playerName === "心碎") {
+        data.playerName = "心碎小狗";
+        localStorage.setItem("troopRatioSettings", JSON.stringify(data));
+      }
       ids.forEach(id => {
         const el = document.getElementById(id);
         if (el && data[id] !== undefined) el.value = data[id];
@@ -351,23 +356,29 @@
     }
 
     function table(title, row, target) {
-      const [label, css] = status(row.total, target);
+      const [statusLabel, css] = status(row.total, target);
+      const th = language === "en"
+        ? { inf:"Infantry", lan:"Lancer", mar:"Marksman", total:"Total", status:"Status" }
+        : { inf:"盾兵", lan:"矛兵", mar:"射手", total:"總數", status:"狀態" };
+      const label = language === "en"
+        ? statusLabel
+        : ({ Exact:"剛好", Under:"不足", Over:"超出" }[statusLabel] || statusLabel);
       return `
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>${title}</th><th>盾兵</th><th>矛兵</th><th>射手</th><th>總數</th><th>狀態</th>
+                <th>${title}</th><th>${th.inf}</th><th>${th.lan}</th><th>${th.mar}</th><th>${th.total}</th><th>${th.status}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>${row.name}</td>
-                <td data-label="盾兵">${fmt(row.infantry)}</td>
-                <td data-label="矛兵">${fmt(row.lancer)}</td>
-                <td data-label="射手">${fmt(row.marksman)}</td>
-                <td data-label="總數">${fmt(row.total)}</td>
-                <td data-label="狀態" class="${css}">${label}</td>
+                <td data-label="${th.inf}">${fmt(row.infantry)}</td>
+                <td data-label="${th.lan}">${fmt(row.lancer)}</td>
+                <td data-label="${th.mar}">${fmt(row.marksman)}</td>
+                <td data-label="${th.total}">${fmt(row.total)}</td>
+                <td data-label="${th.status}" class="${css}">${label}</td>
               </tr>
             </tbody>
           </table>
@@ -396,9 +407,9 @@
           <span class="seg mar" style="width:${mar / all * 100}%"></span>
         </div>
         <div class="legend">
-          <span class="legend-item"><i class="dot inf"></i>盾 ${fmt(inf)}</span>
-          <span class="legend-item"><i class="dot lan"></i>矛 ${fmt(lan)}</span>
-          <span class="legend-item"><i class="dot mar"></i>射 ${fmt(mar)}</span>
+          <span class="legend-item"><i class="dot inf"></i>${language === "en" ? "Inf" : "盾"} ${fmt(inf)}</span>
+          <span class="legend-item"><i class="dot lan"></i>${language === "en" ? "Lan" : "矛"} ${fmt(lan)}</span>
+          <span class="legend-item"><i class="dot mar"></i>${language === "en" ? "Mar" : "射"} ${fmt(mar)}</span>
         </div>`;
 
       const rInf = value("mainInfRatio");
@@ -426,7 +437,7 @@
     }
 
     fillOnce();
-    applyLanguage("en");
+    applyLanguage(language);
 
     document.getElementById("langEn").addEventListener("click", () => applyLanguage("en"));
     document.getElementById("langZh").addEventListener("click", () => applyLanguage("zh"));
