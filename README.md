@@ -94,14 +94,14 @@ Off / 關閉 = 0%
 目前程式計算方式：
 
 ```text
-固定容量
+乘算前容量
 = 有英雄出征容量
 + Cyrille 出征容量加成
 + Snow Ape 出征容量加成
-+ Minister of Strategy 加成
 
 最終單隊容量
-= floor(固定容量 × (1 + 出征容量增益%))
+= floor(乘算前容量 × (1 + 出征容量增益%))
++ Minister of Strategy 加成
 ```
 
 #### Cyrille — Entrapment／西里爾—四方圍獵
