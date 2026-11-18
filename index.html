@@ -80,25 +80,16 @@
         </label>
         <label><span id="labelJoinerLimit">Joiner Team Limit</span><input id="joinerLimit" type="number" value="97000" min="0"></label>
         <label><span id="labelMarchQueue">March Queue</span>
-          <select id="marchQueueCount">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6" selected>6</option>
-          </select>
+          <div class="range-row">
+            <input id="marchQueueCount" type="range" min="0" max="6" step="1" value="6">
+            <strong id="marchQueueValue" class="range-value">6</strong>
+          </div>
         </label>
         <label><span id="labelHeroLess">Hero-less Joiner Count</span>
-          <select id="heroLessJoinerCount">
-            <option value="0">0</option>
-            <option value="1" selected>1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
+          <div class="range-row">
+            <input id="heroLessJoinerCount" type="range" min="0" max="6" step="1" value="1">
+            <strong id="heroLessJoinerValue" class="range-value">1</strong>
+          </div>
         </label>
       </div>
     </section>
@@ -439,6 +430,8 @@
       const total = inf + lan + mar;
 
       document.getElementById("playerDisplay").textContent = value("playerName") || I18N[language].unnamed;
+      document.getElementById("marchQueueValue").textContent = value("marchQueueCount");
+      document.getElementById("heroLessJoinerValue").textContent = value("heroLessJoinerCount");
       document.getElementById("totalTroops").textContent = I18N[language].totalTroops + " " + fmt(total);
       const fixedMarchBonus = value("cyrilleBonus") + value("petBonus") + value("ministerBonus");
       const preBoostCap = value("withHeroesCap") + fixedMarchBonus;
