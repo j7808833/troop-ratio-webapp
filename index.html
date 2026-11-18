@@ -37,7 +37,7 @@
     
 
     <section class="page-title">
-      <p class="kicker">Settings</p>
+      <p class="kicker" id="settingsKicker">Settings</p>
       <h2 id="settingsTitle">Settings</h2>
       <p id="settingsDesc">Enter your data once here. Bear Hunt and Crazy Joe will use these settings automatically.</p>
     </section>
@@ -65,7 +65,7 @@
         </label>
         <label><span id="labelPet">Snow Ape — Tumbling Power</span>
           <select id="petBonus">
-            <option value="0">Not active · +0</option>
+            <option value="0" data-en="Not active · +0" data-zh="未啟用 · +0">Not active · +0</option>
             <option value="1500">Lv.10 · +1,500</option>
             <option value="3000">Lv.20 · +3,000</option>
             <option value="4500">Lv.30 · +4,500</option>
@@ -113,7 +113,7 @@
         </label>
         <label><span id="labelPetRally">Iron Rhino — Rallying Beasts</span>
           <select id="petRallyBonus">
-            <option value="0">Not active · +0</option>
+            <option value="0" data-en="Not active · +0" data-zh="未啟用 · +0">Not active · +0</option>
             <option value="60000">Lv.10 · +60,000</option>
             <option value="70000">Lv.20 · +70,000</option>
             <option value="80000">Lv.30 · +80,000</option>
@@ -223,6 +223,7 @@
       en: {
         playerLabel: "Player",
         bannerTitle: "Troop Configuration Calculator",
+        settingsKicker: "Settings",
         settingsTitle: "Settings",
         settingsDesc: "Enter your data once here. Bear Hunt and Crazy Joe will use these settings automatically.",
         basicTitle: "Basic Information",
@@ -268,6 +269,7 @@
       zh: {
         playerLabel: "玩家",
         bannerTitle: "活動兵力配置計算器",
+        settingsKicker: "設定",
         settingsTitle: "設定",
         settingsDesc: "所有資料只需在這裡輸入一次，獵熊行動與瘋狂的喬伊頁面會直接讀取。",
         basicTitle: "基本資料",
@@ -317,7 +319,7 @@
       localStorage.setItem("troopRatioLanguage", lang);
       const t = I18N[lang];
       const textIds = [
-        "playerLabel","bannerTitle","settingsTitle","settingsDesc","basicTitle",
+        "playerLabel","bannerTitle","settingsKicker","settingsTitle","settingsDesc","basicTitle",
         "labelPlayerName","labelWithHeroes","labelWithoutHeroes","labelCyrille","labelPet",
         "capacityBuffTitle","labelCyrilleRally","labelPetRally","labelMinister","labelDeploymentBoost",
         "labelMarchQueue","marchBonusLabel","rallyBonusLabel","capacityBuffHint",
