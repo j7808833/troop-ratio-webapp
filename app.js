@@ -4,6 +4,8 @@ const DEFAULTS = {
   withoutHeroesCap: 107400,
   cyrilleBonus: 0,
   petBonus: 0,
+  cyrilleRallyBonus: 0,
+  petRallyBonus: 0,
   joinerLimit: 97000,
   joinerCount: 5,
   infantry: 278686,
@@ -27,7 +29,8 @@ function getValue(id) {
   const el = document.getElementById(id);
   if (el) return el.type === "number" ? Number(el.value) || 0 : el.value;
   const data = savedData();
-  return data[id] ?? DEFAULTS[id];
+  const v = data[id] ?? DEFAULTS[id];
+  return typeof DEFAULTS[id] === "number" ? Number(v) || 0 : v;
 }
 
 function fmt(value) {
